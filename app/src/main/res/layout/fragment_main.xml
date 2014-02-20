@@ -35,6 +35,6 @@
             android:id="@+id/btnUpdateStatus"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="tweet"
+            android:text="share"
             />
 </LinearLayout>

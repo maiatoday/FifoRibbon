@@ -1,7 +1,6 @@
 package za.co.maiatoday.devart.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,28 +11,36 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
+
 import za.co.maiatoday.devart.R;
-import za.co.maiatoday.devart.preferences.Prefs;
 
 /**
  * Created by maia on 2013/09/01.
  */
-public class InfoFragment extends Fragment {
-    // Login button
-    Button btnLoginTwitter;
-    // Logout button
-    Button btnLogoutTwitter;
-    TextView infoText;
-    TextView logInPrompt;
+public class InfoFragment extends Fragment implements View.OnClickListener{
+    private TextView mInfoText;
+    private SignInButton mSignInButton;
+    private Button mSignOutButton;
+    private Button mRevokeButton;
+    private TextView mStatus;
+
+    // TODO need to move it into a headless fragment
+    // GoogleApiClient wraps our service connection to Google Play services and
+    // provides access to the users sign in state and Google's APIs.
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_info, container, false);
 
-        btnLoginTwitter = (Button) view.findViewById(R.id.btnLoginTwitter);
-        btnLogoutTwitter = (Button) view.findViewById(R.id.btnLogoutTwitter);
-        infoText = (TextView) view.findViewById(R.id.lblInfo);
-        logInPrompt = (TextView) view.findViewById(R.id.tvTwitterPrompt);
+        mInfoText = (TextView) view.findViewById(R.id.lblInfo);
+        mSignInButton = (SignInButton) view.findViewById(R.id.sign_in_button);
+        mSignOutButton = (Button) view.findViewById(R.id.sign_out_button);
+        mRevokeButton = (Button) view.findViewById(R.id.revoke_access_button);
+        mStatus = (TextView) view.findViewById(R.id.sign_in_status);
         try {
             String verStr = "Version: " + getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName;
             TextView version = (TextView) view.findViewById(R.id.lblVersion);
@@ -43,32 +50,8 @@ public class InfoFragment extends Fragment {
         }
 
         Button btnMoreInfo = (Button) view.findViewById(R.id.btnGotoWeb);
-        /**
-         * Twitter login button click event will call loginToTwitter() function
-         * */
-        btnLoginTwitter.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View arg0) {
-                // Call login twitter function
-                loginToTwitter();
-
-            }
-        });
-
-        /**
-         * Button click event for logout from twitter
-         * */
-        btnLogoutTwitter.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                // Call logout twitter function
-                logoutFromTwitter();
-            }
-        });
-
-        infoText.setOnClickListener(new View.OnClickListener() {
+        mInfoText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/search?q=%23autoselfie&s=typd&f=realtime")));
@@ -81,6 +64,10 @@ public class InfoFragment extends Fragment {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.maiatoday.co.za")));
             }
         });
+
+        mSignInButton.setOnClickListener(this);
+        mSignOutButton.setOnClickListener(this);
+        mRevokeButton.setOnClickListener(this);
         return view;
     }
 
@@ -90,47 +77,43 @@ public class InfoFragment extends Fragment {
         setButtonsView();
     }
 
-    /**
-     * Check user already logged in your application using twitter Login flag is
-     * fetched from Shared Preferences
-     */
-    private boolean isTwitterLoggedInAlready() {
-        // return twitter login status from Shared Preferences
-        return getActivity().getSharedPreferences(Prefs.PREF_NAME, 0).getBoolean(Prefs.PREF_KEY_TWITTER_LOGIN, false);
-    }
-
-    /**
-     * Function to login twitter
-     */
-    private void loginToTwitter() {
-//        Intent i = new Intent();
-//        i.putExtra(LOG_IN_TWITTER, true);
-//        setResult(RESULT_OK, i);
-//        finish();
-        OnTwitterRequest activity = (OnTwitterRequest) getActivity();
-        activity.logInTwitter();
-    }
-
-    /**
-     * Function to logout from twitter
-     * It will just clear the application shared preferences
-     */
-    private void logoutFromTwitter() {
-        // Clear the shared preferences
-        SharedPreferences.Editor e = getActivity().getSharedPreferences(Prefs.PREF_NAME, 0).edit();
-        e.remove(Prefs.PREF_KEY_OAUTH_TOKEN);
-        e.remove(Prefs.PREF_KEY_OAUTH_SECRET);
-        e.remove(Prefs.PREF_KEY_TWITTER_LOGIN);
-        e.commit();
-        setButtonsView();
-    }
-
 
     private void setButtonsView() {
         // Hide buttons
-        boolean isLoggedIn = isTwitterLoggedInAlready();
-        btnLoginTwitter.setVisibility(isLoggedIn ? View.GONE : View.VISIBLE);
-        logInPrompt.setVisibility(isLoggedIn ? View.GONE : View.VISIBLE);
-        btnLogoutTwitter.setVisibility(isLoggedIn ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+//    TODO    if (!mGoogleApiClient.isConnecting()) {
+            // We only process button clicks when GoogleApiClient is not transitioning
+            // between connected and not connected.
+            switch (v.getId()) {
+            case R.id.sign_in_button:
+                mStatus.setText(R.string.status_signing_in);
+              //TODO add  resolveSignInError();
+                break;
+            case R.id.sign_out_button:
+                // We clear the default account on sign out so that Google Play
+                // services will not return an onConnected callback without user
+                // interaction.
+                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                mGoogleApiClient.disconnect();
+                mGoogleApiClient.connect();
+                break;
+            case R.id.revoke_access_button:
+                // After we revoke permissions for the user with a GoogleApiClient
+                // instance, we must discard it and create a new one.
+                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                // Our sample has caches no user data from Google+, however we
+                // would normally register a callback on revokeAccessAndDisconnect
+                // to delete user data so that we comply with Google developer
+                // policies.
+                Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+              //TODO  mGoogleApiClient = buildGoogleApiClient();
+                mGoogleApiClient.connect();
+                break;
+            }
+    //    }
     }
 }
