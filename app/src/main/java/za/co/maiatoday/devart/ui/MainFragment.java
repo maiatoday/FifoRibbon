@@ -88,41 +88,33 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
         btnUpdateStatus = (Button) view.findViewById(R.id.btnUpdateStatus);
         txtUpdate = (EditText) view.findViewById(R.id.txtUpdateStatus);
 
-        /**
-         * Button click event to Update Status, will call UpdateTwitterStatusTask()
-         * function
-         * */
+
         btnUpdateStatus.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
-                OnTwitterRequest activity = (OnTwitterRequest) getActivity();
-                if (!activity.isTwitterLoggedInAlready()) {
-                    activity.logInTwitter();
-                } else {
-                    if (selfie.processSelfie()) {
-                        imageView.setImageBitmap(selfie.getBmpToPost());
-                        if (!TextUtils.isEmpty(txtUpdate.getText().toString())) {
-                            selfie.setStatus(txtUpdate.getText().toString());
-                        }
-                        if (debugSaveFile) {
-                            ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
-                        }
-                        if (debugTweet) {
-                            activity.updateStatus(selfie);
-                        }
-                        if (debugHide) {
-                            Runnable r = new Runnable() {
-                                public void run() {
-                                    imageView.setImageBitmap(selfie.getOrig());
-                                }
-                            };
-                            imageView.postDelayed(r, 2000);
-                        }
+                if (selfie.processSelfie()) {
+                    imageView.setImageBitmap(selfie.getBmpToPost());
+                    if (!TextUtils.isEmpty(txtUpdate.getText().toString())) {
+                        selfie.setStatus(txtUpdate.getText().toString());
+                    }
+                    if (debugSaveFile) {
+                        ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
+                    }
+//                        if (debugTweet) {
+//                            activity.updateStatus(selfie);
+//                        }
+                    if (debugHide) {
+                        Runnable r = new Runnable() {
+                            public void run() {
+                                imageView.setImageBitmap(selfie.getOrig());
+                            }
+                        };
+                        imageView.postDelayed(r, 2000);
                     }
                 }
             }
+
         });
 
         btnSnap.setOnClickListener(new View.OnClickListener() {

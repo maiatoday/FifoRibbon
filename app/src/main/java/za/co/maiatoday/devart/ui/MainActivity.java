@@ -1,6 +1,9 @@
 package za.co.maiatoday.devart.ui;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -17,6 +20,9 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.plus.Plus;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -25,10 +31,8 @@ import twitter4j.TwitterException;
 import za.co.maiatoday.devart.R;
 import za.co.maiatoday.devart.preferences.Prefs;
 import za.co.maiatoday.devart.util.ConnectionDetector;
-import za.co.maiatoday.devart.util.SelfieStatus;
-import za.co.maiatoday.devart.util.TwitterHelper;
 
-public class MainActivity extends ActionBarActivity implements OnTwitterRequest {
+public class MainActivity extends ActionBarActivity  {
     private static final String MAIN_FRAGMENT = "main";
     private static final String INFO_FRAGMENT = "info";
     private static final String AUTH_FRAGMENT = "authDialog";
@@ -42,12 +46,12 @@ public class MainActivity extends ActionBarActivity implements OnTwitterRequest 
     AlertDialogManager alert = new AlertDialogManager();
     // Shared Preferences
     private static SharedPreferences mSharedPreferences;
-    private TwitterHelper twitHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        PlusFragment.getInstance(this);
         setContentView(R.layout.activity_main);
         mSharedPreferences = getSharedPreferences(Prefs.PREF_NAME, 0);
         // Start the first fragment.
@@ -91,6 +95,9 @@ public class MainActivity extends ActionBarActivity implements OnTwitterRequest 
         switch (item.getItemId()) {
         case R.id.action_info:
             switchToInfoFragment();
+            return true;
+        case R.id.action_share:
+            //TODO implement share
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -205,166 +212,20 @@ public class MainActivity extends ActionBarActivity implements OnTwitterRequest 
 //        }
 //    };
 
-
-    //---------twitter code--------------------
     @Override
-    public void logInTwitter() {
-        switchToMainFragment();
-        LogInToTwitterTask t = new LogInToTwitterTask();
-        t.execute();
-    }
-
-    //Display the oAuth web page in a dialog
-    void showAuthDialog() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        OAuthFragment newFragment = new OAuthFragment();
-        newFragment.setTwitterHelper(this.twitHelper);
-        newFragment.show(ft, AUTH_FRAGMENT);
-    }
-
-
-    /**
-     * AsyncTask to update status
-     */
-    class LogInToTwitterTask extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            String result = "";
-            twitHelper = new TwitterHelper(MainActivity.this);
-            if (!twitHelper.isLoggedIn()) {
-                if (twitHelper.setupRequestToken()) {
-                    result = "ok";
-                }
-
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            if (TextUtils.isEmpty(s)) {
-                // user already logged into twitter or error
-                Toast.makeText(getApplicationContext(),
-                    "Problem or already Logged into twitter", Toast.LENGTH_LONG).show();
-            } else {
-                Log.d(TAG, "startActivity oauth intent");
-                showAuthDialog();
-            }
-        }
-    }
-
-
-    private void tellFragmentsTwitterStatus(boolean loggedIn) {
-        Log.d(TAG, "twitter logged in " + loggedIn);
-        if (loggedIn) {
-            switchToMainFragment();
-        } else {
-            switchToInfoFragment();
-        }
-
-    }
-
-    /**
-     * Check user already logged in your application using twitter Login flag is
-     * fetched from Shared Preferences
-     */
-    @Override
-    public boolean isTwitterLoggedInAlready() {
-        // return twitter login status from Shared Preferences
-        return mSharedPreferences.getBoolean(Prefs.PREF_KEY_TWITTER_LOGIN, false);
-    }
-
-    SelfieStatus selfie;
-
-    @Override
-    public void updateStatus(SelfieStatus status) {
-        selfie = status;
-        UpdateTwitterStatusTask t = new UpdateTwitterStatusTask();
-        t.execute(selfie.getStatus());
-
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // No action here, call super to delegate to Fragments
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
-    public void checkTwitterLoginState() {
-        tellFragmentsTwitterStatus(isTwitterLoggedInAlready());
-    }
-
-
-    /**
-     * AsyncTask to update status
-     */
-    class UpdateTwitterStatusTask extends AsyncTask<String, String, String> {
-
-        /**
-         * Before starting background thread Show Progress Dialog
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Updating to twitter...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
+    protected Dialog onCreateDialog(int id) {
+        switch(id) {
+        case PlusFragment.DIALOG_PLAY_SERVICES_ERROR:
+            return PlusFragment.getInstance(this).onCreateDialog(id);
+        default:
+            return super.onCreateDialog(id);
         }
-
-        /**
-         * getting Places JSON
-         */
-        protected String doInBackground(String... args) {
-            String status = selfie.getStatus();
-            Log.d("Tweet Text", "> " + status);
-            Bitmap bitmap565 = selfie.getBmpToPost();
-            final StatusUpdate statusUpdate = new StatusUpdate(status);
-//            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.autoselfie_test);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap565.compress(Bitmap.CompressFormat.PNG, 100, baos);
-//            byte[] imageBytes = baos.toByteArray();
-//            String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-//            // then flip the stream
-            byte[] myTwitterUploadBytes = baos.toByteArray();
-            ByteArrayInputStream bis = new ByteArrayInputStream(myTwitterUploadBytes);
-            statusUpdate.setMedia("#autoselfie", bis);
-            try {
-                twitHelper = new TwitterHelper(MainActivity.this);
-
-                // Update status
-                twitter4j.Status response = twitHelper.getTwitter().updateStatus(statusUpdate);
-
-                Log.d("Status", "> " + response.getText());
-            } catch (TwitterException e) {
-                // Error in updating status
-                Log.d("Twitter Update Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog and show
-         * the data in UI Always use runOnUiThread(new Runnable()) to update UI
-         * from background thread, otherwise you will get error
-         * *
-         */
-        protected void onPostExecute(String file_url) {
-            // dismiss the dialog after getting all products
-            pDialog.dismiss();
-            // updating UI from Background Thread
-            Toast.makeText(getApplicationContext(),
-                "Status tweeted successfully", Toast.LENGTH_SHORT)
-                .show();
-        }
-
     }
 
 

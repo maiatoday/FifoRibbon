@@ -20,17 +20,19 @@ import za.co.maiatoday.devart.R;
 /**
  * Created by maia on 2013/09/01.
  */
-public class InfoFragment extends Fragment implements View.OnClickListener{
+public class InfoFragment extends Fragment implements View.OnClickListener {
     private TextView mInfoText;
     private SignInButton mSignInButton;
     private Button mSignOutButton;
     private Button mRevokeButton;
     private TextView mStatus;
+    private PlusFragment plusFragment;
 
-    // TODO need to move it into a headless fragment
-    // GoogleApiClient wraps our service connection to Google Play services and
-    // provides access to the users sign in state and Google's APIs.
-    private GoogleApiClient mGoogleApiClient;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        plusFragment = PlusFragment.getInstance(getActivity());
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,41 +81,33 @@ public class InfoFragment extends Fragment implements View.OnClickListener{
 
 
     private void setButtonsView() {
-        // Hide buttons
+        if (plusFragment.isConnected()) {
+            mSignInButton.setEnabled(false);
+            mSignOutButton.setEnabled(true);
+            mRevokeButton.setEnabled(true);
+        } else {
+            mSignInButton.setEnabled(true);
+            mSignOutButton.setEnabled(false);
+            mRevokeButton.setEnabled(false);
+        }
+        mStatus.setText(plusFragment.getStatus());
     }
 
     @Override
     public void onClick(View v) {
-
-//    TODO    if (!mGoogleApiClient.isConnecting()) {
-            // We only process button clicks when GoogleApiClient is not transitioning
-            // between connected and not connected.
-            switch (v.getId()) {
-            case R.id.sign_in_button:
-                mStatus.setText(R.string.status_signing_in);
-              //TODO add  resolveSignInError();
-                break;
-            case R.id.sign_out_button:
-                // We clear the default account on sign out so that Google Play
-                // services will not return an onConnected callback without user
-                // interaction.
-                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-                mGoogleApiClient.disconnect();
-                mGoogleApiClient.connect();
-                break;
-            case R.id.revoke_access_button:
-                // After we revoke permissions for the user with a GoogleApiClient
-                // instance, we must discard it and create a new one.
-                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-                // Our sample has caches no user data from Google+, however we
-                // would normally register a callback on revokeAccessAndDisconnect
-                // to delete user data so that we comply with Google developer
-                // policies.
-                Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
-              //TODO  mGoogleApiClient = buildGoogleApiClient();
-                mGoogleApiClient.connect();
-                break;
-            }
-    //    }
+        // We only process button clicks when GoogleApiClient is not transitioning
+        // between connected and not connected.
+        switch (v.getId()) {
+        case R.id.sign_in_button:
+            mStatus.setText(R.string.status_signing_in);
+            plusFragment.signIn();
+            break;
+        case R.id.sign_out_button:
+            plusFragment.signOut();
+            break;
+        case R.id.revoke_access_button:
+            plusFragment.revoke();
+            break;
+        }
     }
 }

@@ -5,9 +5,5 @@ package za.co.maiatoday.devart.preferences;
  */
 public interface Prefs {
     // Preference Constants
-//    static String PREFERENCE_NAME = "twitter_oauth";
-    static final String PREF_KEY_OAUTH_TOKEN = "oauth_token";
-    static final String PREF_KEY_OAUTH_SECRET = "oauth_token_secret";
-    static final String PREF_KEY_TWITTER_LOGIN = "isTwitterLoggedIn";
-    static final String PREF_NAME = "autoSelfiePrefs";
+    static final String PREF_NAME = "za.co.maiatoday.devart.preferences";
 }
