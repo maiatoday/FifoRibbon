@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -53,10 +52,8 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
     SelfieStatus selfie = new SelfieStatus();
 
     private Path path;
-    private int pathColor = Color.RED;
     private boolean debugHide = true;
     private boolean debugSaveFile = true;
-    private boolean debugTweet = false;
     private Bitmap bitmap;
     private Matrix inverseMatrix = new Matrix();
 
@@ -101,9 +98,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
                     if (debugSaveFile) {
                         ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
                     }
-//                        if (debugTweet) {
-//                            activity.updateStatus(selfie);
-//                        }
+                    //TODO post image to g+
                     if (debugHide) {
                         Runnable r = new Runnable() {
                             public void run() {

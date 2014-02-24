@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.plus.Plus;
 
 import za.co.maiatoday.devart.R;
 
@@ -81,6 +79,7 @@ public class InfoFragment extends Fragment implements View.OnClickListener {
 
 
     private void setButtonsView() {
+        //TODO fix display of state just after sign in or revoke
         if (plusFragment.isConnected()) {
             mSignInButton.setEnabled(false);
             mSignOutButton.setEnabled(true);
