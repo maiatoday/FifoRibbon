@@ -1,51 +1,29 @@
 package za.co.maiatoday.devart.ui;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.plus.Plus;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
-import twitter4j.StatusUpdate;
-import twitter4j.TwitterException;
 import za.co.maiatoday.devart.R;
-import za.co.maiatoday.devart.preferences.Prefs;
 import za.co.maiatoday.devart.util.ConnectionDetector;
 
 public class MainActivity extends ActionBarActivity  {
     private static final String MAIN_FRAGMENT = "main";
     private static final String INFO_FRAGMENT = "info";
-    private static final String AUTH_FRAGMENT = "authDialog";
     final String TAG = "MainActivity";
     // Internet Connection detector
     private ConnectionDetector cd;
-    // Progress dialog
-    ProgressDialog pDialog;
 
     // Alert Dialog Manager
     AlertDialogManager alert = new AlertDialogManager();
     // Shared Preferences
-    private static SharedPreferences mSharedPreferences;
+//    private static SharedPreferences mSharedPreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +31,7 @@ public class MainActivity extends ActionBarActivity  {
         super.onCreate(savedInstanceState);
         PlusFragment.getInstance(this);
         setContentView(R.layout.activity_main);
-        mSharedPreferences = getSharedPreferences(Prefs.PREF_NAME, 0);
+//        mSharedPreferences = getSharedPreferences(Prefs.PREF_NAME, 0);
         // Start the first fragment.
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
@@ -76,7 +54,7 @@ public class MainActivity extends ActionBarActivity  {
                     .add(R.id.fragment_container, firstFragment, tag).commit();
             }
         }
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);    // Shared Preferences
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);    // Shared Preferences
         cd = new ConnectionDetector(getApplicationContext());
 
         // Check if Internet present
@@ -85,7 +63,6 @@ public class MainActivity extends ActionBarActivity  {
             alert.showAlertDialog(MainActivity.this, "Internet Connection Error",
                 "Please connect to working Internet connection", false);
             // stop executing code by return
-            return;
         }
     }
 

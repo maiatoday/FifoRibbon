@@ -17,6 +17,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
 import za.co.maiatoday.devart.R;
 
@@ -36,11 +37,6 @@ public class PlusFragment extends Fragment implements
     public static final int DIALOG_PLAY_SERVICES_ERROR = 0;
 
     private static final String SAVED_PROGRESS = "sign_in_progress";
-
-
-    public boolean isConnected() {
-        return mGoogleApiClient.isConnected();
-    }
 
     // GoogleApiClient wraps our service connection to Google Play services and
     // provides access to the users sign in state and Google's APIs.
@@ -63,9 +59,10 @@ public class PlusFragment extends Fragment implements
     //                      intents until the current intent completes.
     private int mSignInProgress;
 
-    public int getSignInProgress() {
-        return mSignInProgress;
+    public boolean isConnected() {
+        return mGoogleApiClient.isConnected();
     }
+
 
     private String status = "";
 
@@ -94,10 +91,6 @@ public class PlusFragment extends Fragment implements
             .findFragmentByTag(PlusFragment.TAG);
         if (fragment == null) {
             fragment = new PlusFragment();
-//          Bundle args = new Bundle();
-            // add any parameters to the bundle here
-//          args.putInt("index", index);
-//          fragment.setArguments(args);
             fragmentManager.beginTransaction().add(fragment,
                 PlusFragment.TAG).commit();
         }
@@ -179,6 +172,12 @@ public class PlusFragment extends Fragment implements
     public void onConnected(Bundle bundle) {
         Log.i(TAG, "onConnected");
         // Indicate that the sign in process is complete.
+        // Retrieve some profile information to personalize our app for the user.
+        Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+
+        status = String.format(
+            getResources().getString(R.string.signed_in_as),
+            currentUser.getDisplayName());
         mSignInProgress = STATE_DEFAULT;
     }
 

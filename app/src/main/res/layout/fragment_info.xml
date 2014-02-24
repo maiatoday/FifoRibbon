@@ -12,7 +12,7 @@
 
     <TextView
             android:id="@+id/lblInfo"
-            android:text="You are the subject. Post a selfie. The code will interpret your image and tweet  the result. Find the images by searching for #autoselfie in twitter."
+            android:text="You are the subject. Post a selfie. The code will interpret your image and hide your face. Find the images by searching for #autoselfie on Google+."
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_above="@+id/loginlinearLayout"
