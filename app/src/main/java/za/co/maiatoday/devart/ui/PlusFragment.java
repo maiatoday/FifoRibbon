@@ -173,11 +173,15 @@ public class PlusFragment extends Fragment implements
         Log.i(TAG, "onConnected");
         // Indicate that the sign in process is complete.
         // Retrieve some profile information to personalize our app for the user.
-        Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-
-        status = String.format(
-            getResources().getString(R.string.signed_in_as),
-            currentUser.getDisplayName());
+        if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+            String personName = currentPerson.getDisplayName();
+            status = String.format(
+                getResources().getString(R.string.signed_in_as),
+                personName);
+//            Person.Image personPhoto = currentPerson.getImage();
+//            String personGooglePlusProfile = currentPerson.getUrl();
+        }
         mSignInProgress = STATE_DEFAULT;
     }
 

@@ -30,6 +30,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.plus.PlusShare;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ import za.co.maiatoday.devart.util.SelfieStatus;
  */
 public class MainFragment extends Fragment implements View.OnTouchListener {   // Update status button
     private static final int REQUEST_IMAGE = 2;
-    Button btnUpdateStatus;
+    Button shareButton;
     EditText txtUpdate;
     private Uri shareUri;
     private ImageView imageView;
@@ -82,11 +84,11 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
         populateImageFromUri(shareUri);
         btnSnap = (Button) view.findViewById(R.id.btnSnap);
         // All UI elements
-        btnUpdateStatus = (Button) view.findViewById(R.id.btnUpdateStatus);
+        shareButton = (Button) view.findViewById(R.id.share_button);
         txtUpdate = (EditText) view.findViewById(R.id.txtUpdateStatus);
 
 
-        btnUpdateStatus.setOnClickListener(new View.OnClickListener() {
+        shareButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -98,7 +100,20 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
                     if (debugSaveFile) {
                         ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
                     }
-                    //TODO post image to g+
+                    // Launch the Google+ share dialog with attribution to your app.
+//
+//                    Uri selectedImage = intent.getData();
+//                    ContentResolver cr = this.getContentResolver();
+//                    String mime = cr.getType(selectedImage);
+                    Intent shareIntent = new PlusShare.Builder(getActivity())
+                        .setType("text/plain")
+                        .setText(txtUpdate.getText().toString())
+                        .setContentUrl(Uri.parse("http://www.maiatoday.co.za"))
+//                        .addStream(selectedImage)
+//                        .setType(mimeType)
+                        .getIntent();
+                    startActivityForResult(shareIntent, 0);
+
                     if (debugHide) {
                         Runnable r = new Runnable() {
                             public void run() {
