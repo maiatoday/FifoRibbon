@@ -72,9 +72,6 @@ public class MainActivity extends ActionBarActivity  {
         case R.id.action_info:
             switchToInfoFragment();
             return true;
-        case R.id.action_share:
-            //TODO implement share
-            return true;
         default:
             return super.onOptionsItemSelected(item);
         }

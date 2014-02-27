@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,36 +94,8 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
 
             @Override
             public void onClick(View v) {
-                if (selfie.processSelfie()) {
-                    imageView.setImageBitmap(selfie.getBmpToPost());
-                    if (!TextUtils.isEmpty(txtUpdate.getText().toString())) {
-                        selfie.setStatus(txtUpdate.getText().toString());
-                    }
-
-                    // Launch the Google+ share dialog with attribution to your app.
-                    Uri selectedImage = ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
-                    ContentResolver cr = getActivity().getContentResolver();
-                    String mime = cr.getType(selectedImage);
-                    Intent shareIntent = new PlusShare.Builder(getActivity())
-                        .setType("text/plain")
-                        .setText(txtUpdate.getText().toString())
-//                        .setContentUrl(Uri.parse("http://www.maiatoday.co.za"))
-                        .addStream(selectedImage)
-                        .setType(mime)
-                        .getIntent();
-                    startActivityForResult(shareIntent, 0);
-
-                    if (debugHide) {
-                        Runnable r = new Runnable() {
-                            public void run() {
-                                imageView.setImageBitmap(selfie.getOrig());
-                            }
-                        };
-                        imageView.postDelayed(r, 2000);
-                    }
-                }
+                processImageToShare();
             }
-
         });
 
         btnSnap.setOnClickListener(new View.OnClickListener() {
@@ -175,6 +148,18 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+        case R.id.action_share:
+            processImageToShare();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     private Uri outputFileUri;
@@ -314,6 +299,37 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
         canvas.drawPath(path, paint);
         return out;
 
+    }
+
+    private void processImageToShare() {
+        if (selfie.processSelfie()) {
+            imageView.setImageBitmap(selfie.getBmpToPost());
+            if (!TextUtils.isEmpty(txtUpdate.getText().toString())) {
+                selfie.setStatus(txtUpdate.getText().toString());
+            }
+
+            // Launch the Google+ share dialog with attribution to your app.
+            Uri selectedImage = ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
+            ContentResolver cr = getActivity().getContentResolver();
+            String mime = cr.getType(selectedImage);
+            Intent shareIntent = new PlusShare.Builder(getActivity())
+                .setType("text/plain")
+                .setText(txtUpdate.getText().toString())
+//                        .setContentUrl(Uri.parse("http://www.maiatoday.co.za"))
+                .addStream(selectedImage)
+                .setType(mime)
+                .getIntent();
+            startActivityForResult(shareIntent, 0);
+
+            if (debugHide) {
+                Runnable r = new Runnable() {
+                    public void run() {
+                        imageView.setImageBitmap(selfie.getOrig());
+                    }
+                };
+                imageView.postDelayed(r, 2000);
+            }
+        }
     }
 
 }
