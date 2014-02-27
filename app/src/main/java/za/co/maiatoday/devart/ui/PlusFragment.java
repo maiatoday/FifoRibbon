@@ -211,7 +211,9 @@ public class PlusFragment extends Fragment implements
                 resolveSignInError();
             }
         }
-        status = getString(R.string.status_signed_out);
+        if (getActivity() != null) {
+           status = getString(R.string.status_signed_out);
+        }
 
     }
 

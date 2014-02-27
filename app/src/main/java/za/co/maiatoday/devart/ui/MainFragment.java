@@ -60,6 +60,8 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
     private boolean debugSaveFile = true;
     private Bitmap bitmap;
     private Matrix inverseMatrix = new Matrix();
+    private PlusFragment plusFragment;
+    private MainNavigation mainActivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,13 +90,18 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
         // All UI elements
         shareButton = (Button) view.findViewById(R.id.share_button);
         txtUpdate = (EditText) view.findViewById(R.id.txtUpdateStatus);
-
+        plusFragment = PlusFragment.getInstance(getActivity());
 
         shareButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                processImageToShare(true);
+                if (plusFragment.isConnected()) {
+                    processImageToShare(true);
+                } else {
+                    //TODO save image if we go to info fragment
+                    mainActivity.switchToInfoFragment();
+                }
             }
         });
 
@@ -110,6 +117,11 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
                 openImageIntent();
             }
         });
+
+        if (savedInstanceState != null) {
+            processedImageUri = savedInstanceState.getParcelable("lastUri");
+            populateImageFromUri(processedImageUri);
+        }
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,8 +139,29 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("lastUri", processedImageUri);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+           mainActivity = (MainNavigation) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                + " must implement MainNavigation");
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
+        populateImageFromUri(processedImageUri);
     }
 
     @Override
@@ -301,6 +334,8 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
 
     }
 
+    private Uri processedImageUri;
+
     private void processImageToShare(boolean plus) {
         if (selfie.processSelfie()) {
             imageView.setImageBitmap(selfie.getBmpToPost());
@@ -309,23 +344,23 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
             }
 
             // Launch the Google+ share dialog with attribution to your app.
-            Uri selectedImage = ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
+            processedImageUri = ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
             ContentResolver cr = getActivity().getContentResolver();
-            String mime = cr.getType(selectedImage);
+            String mime = cr.getType(processedImageUri);
             Intent shareIntent;
             if (plus) {
                 shareIntent = new PlusShare.Builder(getActivity())
                     .setType("text/plain")
                     .setText(txtUpdate.getText().toString())
 //                        .setContentUrl(Uri.parse("http://www.maiatoday.co.za"))
-                    .addStream(selectedImage)
+                    .addStream(processedImageUri)
                     .setType(mime)
                     .getIntent();
             } else {
                 shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                 shareIntent.setType(mime);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, selectedImage);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, processedImageUri);
             }
             startActivityForResult(shareIntent, 0);
 

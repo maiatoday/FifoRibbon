@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import za.co.maiatoday.devart.R;
 import za.co.maiatoday.devart.util.ConnectionDetector;
 
-public class MainActivity extends ActionBarActivity  {
+public class MainActivity extends ActionBarActivity implements MainNavigation  {
     private static final String MAIN_FRAGMENT = "main";
     private static final String INFO_FRAGMENT = "info";
     final String TAG = "MainActivity";
@@ -123,7 +123,8 @@ public class MainActivity extends ActionBarActivity  {
     /**
      * open the InfoActivity intent
      */
-    private void switchToInfoFragment() {
+    @Override
+    public void switchToInfoFragment() {
 //        Intent i = new Intent(this, InfoActivity.class);
 //        startActivityForResult(i, REQUEST_INFO);
 
