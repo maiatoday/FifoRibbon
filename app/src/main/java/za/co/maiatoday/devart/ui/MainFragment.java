@@ -94,7 +94,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
 
             @Override
             public void onClick(View v) {
-                processImageToShare();
+                processImageToShare(true);
             }
         });
 
@@ -155,7 +155,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
         // Handle presses on the action bar items
         switch (item.getItemId()) {
         case R.id.action_share:
-            processImageToShare();
+            processImageToShare(false);
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -301,7 +301,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
 
     }
 
-    private void processImageToShare() {
+    private void processImageToShare(boolean plus) {
         if (selfie.processSelfie()) {
             imageView.setImageBitmap(selfie.getBmpToPost());
             if (!TextUtils.isEmpty(txtUpdate.getText().toString())) {
@@ -312,13 +312,21 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
             Uri selectedImage = ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
             ContentResolver cr = getActivity().getContentResolver();
             String mime = cr.getType(selectedImage);
-            Intent shareIntent = new PlusShare.Builder(getActivity())
-                .setType("text/plain")
-                .setText(txtUpdate.getText().toString())
+            Intent shareIntent;
+            if (plus) {
+                shareIntent = new PlusShare.Builder(getActivity())
+                    .setType("text/plain")
+                    .setText(txtUpdate.getText().toString())
 //                        .setContentUrl(Uri.parse("http://www.maiatoday.co.za"))
-                .addStream(selectedImage)
-                .setType(mime)
-                .getIntent();
+                    .addStream(selectedImage)
+                    .setType(mime)
+                    .getIntent();
+            } else {
+                shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                shareIntent.setType(mime);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, selectedImage);
+            }
             startActivityForResult(shareIntent, 0);
 
             if (debugHide) {
