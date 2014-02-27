@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.MenuItem;
 
 import za.co.maiatoday.devart.R;
@@ -27,7 +26,7 @@ public class MainActivity extends ActionBarActivity  {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         PlusFragment.getInstance(this);
         setContentView(R.layout.activity_main);
@@ -83,7 +82,7 @@ public class MainActivity extends ActionBarActivity  {
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
+//        Log.d(TAG, "onResume");
         super.onResume();
 //        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
     }
@@ -91,7 +90,7 @@ public class MainActivity extends ActionBarActivity  {
     @Override
     protected void onNewIntent(Intent intent) {
 
-        Log.d(TAG, "onNewIntent");
+//        Log.d(TAG, "onNewIntent");
         super.onNewIntent(intent);
 
     }
@@ -99,28 +98,28 @@ public class MainActivity extends ActionBarActivity  {
     @Override
     protected void onStart() {
 
-        Log.d(TAG, "onStart");
+//        Log.d(TAG, "onStart");
         super.onStart();
     }
 
     @Override
     protected void onPause() {
 
-        Log.d(TAG, "onPause");
+//        Log.d(TAG, "onPause");
         super.onPause();
     }
 
     @Override
     protected void onStop() {
 
-        Log.d(TAG, "onStop");
+//        Log.d(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
 
-        Log.d(TAG, "onDestroy");
+//        Log.d(TAG, "onDestroy");
         super.onDestroy();
     }
 

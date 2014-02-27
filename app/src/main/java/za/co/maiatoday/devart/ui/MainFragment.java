@@ -2,6 +2,7 @@ package za.co.maiatoday.devart.ui;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -97,20 +98,17 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
                     if (!TextUtils.isEmpty(txtUpdate.getText().toString())) {
                         selfie.setStatus(txtUpdate.getText().toString());
                     }
-                    if (debugSaveFile) {
-                        ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
-                    }
+
                     // Launch the Google+ share dialog with attribution to your app.
-//
-//                    Uri selectedImage = intent.getData();
-//                    ContentResolver cr = this.getContentResolver();
-//                    String mime = cr.getType(selectedImage);
+                    Uri selectedImage = ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
+                    ContentResolver cr = getActivity().getContentResolver();
+                    String mime = cr.getType(selectedImage);
                     Intent shareIntent = new PlusShare.Builder(getActivity())
                         .setType("text/plain")
                         .setText(txtUpdate.getText().toString())
-                        .setContentUrl(Uri.parse("http://www.maiatoday.co.za"))
-//                        .addStream(selectedImage)
-//                        .setType(mimeType)
+//                        .setContentUrl(Uri.parse("http://www.maiatoday.co.za"))
+                        .addStream(selectedImage)
+                        .setType(mime)
                         .getIntent();
                     startActivityForResult(shareIntent, 0);
 

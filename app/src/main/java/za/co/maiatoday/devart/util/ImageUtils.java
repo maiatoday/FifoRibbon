@@ -60,8 +60,8 @@ public class ImageUtils {
         else return k;
     }
 
-    public static boolean saveBitmapToFile(Bitmap pic, Context context) {
-        boolean ret = false;
+    public static Uri saveBitmapToFile(Bitmap pic, Context context) {
+        Uri ret = null;
         final File path = new File(Environment.getExternalStorageDirectory() + File.separator + "autoSelfie" + File.separator);
         final String fname = getUniqueImageFilename(".png");
         final File file = new File(path, fname);
@@ -76,8 +76,7 @@ public class ImageUtils {
                 FileOutputStream fos = new FileOutputStream(file);
                 pic.compress(Bitmap.CompressFormat.PNG, 90, fos);
                 fos.close();
-                addImageToContentProvider(context, file);
-                ret = true;
+                ret = addImageToContentProvider(context, file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -85,7 +84,7 @@ public class ImageUtils {
         return ret;
     }
 
-    private static void addImageToContentProvider(Context context, File imageFile) {
+    private static Uri addImageToContentProvider(Context context, File imageFile) {
         ContentValues image = new ContentValues();
 
         image.put(Images.Media.TITLE, imageFile.getName());
@@ -106,6 +105,6 @@ public class ImageUtils {
 
         image.put(Images.Media.DATA, imageFile.getAbsolutePath());
 
-        Uri result = context.getContentResolver().insert(Images.Media.EXTERNAL_CONTENT_URI, image);
+        return context.getContentResolver().insert(Images.Media.EXTERNAL_CONTENT_URI, image);
     }
 }
