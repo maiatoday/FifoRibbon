@@ -9,7 +9,6 @@ import android.graphics.RectF;
 import android.media.FaceDetector;
 import android.util.Log;
 
-import java.util.List;
 import java.util.Random;
 
 import za.co.maiatoday.devart.glitchP5.GlitchFX;
@@ -36,7 +35,6 @@ public class SelfieStatus {
 //    private Size SPECTRUM_SIZE;
 //    private Scalar CONTOUR_COLOR;
     //    GlitchP5 glitchP5;
-    GlitchFX glitchfx;
     private int magic = 20;
     private WaysToChange waysToChange = WaysToChange.EIGHT_BIT_ROY;
 
@@ -145,7 +143,6 @@ public class SelfieStatus {
         }
         Log.i("SelfieStatus", status);
         processDone = true;
-        glitchfx = new GlitchFX(bmpToPost);
         return true;
     }
 
@@ -587,6 +584,9 @@ public class SelfieStatus {
 
 
     public void glitchImage(RectF bounds, int extraMagic) {
+        GlitchFX glitchfx;
+        Bitmap bmp = bmpToPost.copy(bmpToPost.getConfig(), true);
+        glitchfx = new GlitchFX(bmp);
         glitchImage(bounds, extraMagic, glitchfx);
     }
 
