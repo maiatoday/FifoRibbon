@@ -85,7 +85,6 @@ public class InfoFragment extends Fragment implements View.OnClickListener, Plus
     }
 
     private void setButtonsView(boolean isConnected, String msg) {
-        //TODO fix display of state just after sign in or revoke
         if (isConnected) {
             mSignInButton.setEnabled(false);
             mSignOutButton.setEnabled(true);

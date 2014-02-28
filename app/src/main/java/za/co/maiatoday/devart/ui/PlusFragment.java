@@ -245,6 +245,8 @@ public class PlusFragment extends Fragment implements
                 // resolve the error currently preventing our connection to
                 // Google Play services.
                 mSignInProgress = STATE_IN_PROGRESS;
+                // NB Remember to pass the onActivityResult from the main activity to this fragment
+                // because it won't be routed here automatically
                 getActivity().startIntentSenderForResult(mSignInIntent.getIntentSender(),
                     RC_SIGN_IN, null, 0, 0, 0);
             } catch (IntentSender.SendIntentException e) {
