@@ -19,6 +19,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
+import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import za.co.maiatoday.devart.R;
 
 /**
@@ -59,17 +62,6 @@ public class PlusFragment extends Fragment implements
     //                      intents until the current intent completes.
     private int mSignInProgress;
 
-    public boolean isConnected() {
-        return mGoogleApiClient.isConnected();
-    }
-
-
-    private String status = "";
-
-    public String getStatus() {
-        return status;
-    }
-
     // Used to store the PendingIntent most recently returned by Google Play
     // services until the user clicks 'sign in'.
     private PendingIntent mSignInIntent;
@@ -77,6 +69,20 @@ public class PlusFragment extends Fragment implements
     // Used to store the error code most recently returned by Google Play services
     // until the user clicks 'sign in'.
     private int mSignInError;
+
+
+    public boolean isConnected() {
+        return mGoogleApiClient.isConnected();
+    }
+
+    CopyOnWriteArrayList<PlusStatusChangeListener> listeners = new CopyOnWriteArrayList<PlusStatusChangeListener>();
+
+    private String status = "";
+
+    public String getStatus() {
+        return status;
+    }
+
 
     public PlusFragment() {
     }
@@ -147,6 +153,8 @@ public class PlusFragment extends Fragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent data) {
+
+        Log.d(TAG, "onActivityResult resultCode" + resultCode);
         switch (requestCode) {
         case RC_SIGN_IN:
             if (resultCode == Activity.RESULT_OK) {
@@ -176,9 +184,9 @@ public class PlusFragment extends Fragment implements
         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
             Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
             String personName = currentPerson.getDisplayName();
-            status = String.format(
+            setStatus(String.format(
                 getResources().getString(R.string.signed_in_as),
-                personName);
+                personName));
 //            Person.Image personPhoto = currentPerson.getImage();
 //            String personGooglePlusProfile = currentPerson.getUrl();
         }
@@ -212,7 +220,7 @@ public class PlusFragment extends Fragment implements
             }
         }
         if (getActivity() != null) {
-           status = getString(R.string.status_signed_out);
+            setStatus(getString(R.string.status_signed_out));
         }
 
     }
@@ -224,6 +232,7 @@ public class PlusFragment extends Fragment implements
   * setting to enable device networking, etc.
   */
     private void resolveSignInError() {
+        Log.d(TAG, "resolveSignInError");
         if (mSignInIntent != null) {
             // We have an intent which will allow our user to sign in or
             // resolve an error.  For example if the user needs to
@@ -257,12 +266,14 @@ public class PlusFragment extends Fragment implements
 
     public void signIn() {
         if (!mGoogleApiClient.isConnecting()) {
+            Log.d(TAG, "signIn");
             resolveSignInError();
         }
     }
 
     public void signOut() {
         if (!mGoogleApiClient.isConnecting()) {
+            Log.d(TAG, "signOut");
             // We clear the default account on sign out so that Google Play
             // services will not return an onConnected callback without user
             // interaction.
@@ -274,6 +285,7 @@ public class PlusFragment extends Fragment implements
 
     public void revoke() {
         if (!mGoogleApiClient.isConnecting()) {
+            Log.d(TAG, "revoke");
             // After we revoke permissions for the user with a GoogleApiClient
             // instance, we must discard it and create a new one.
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
@@ -300,7 +312,7 @@ public class PlusFragment extends Fragment implements
                         public void onCancel(DialogInterface dialog) {
                             Log.e(TAG, "Google Play services resolution cancelled");
                             mSignInProgress = STATE_DEFAULT;
-                           status = getString(R.string.status_signed_out);
+                            setStatus(getString(R.string.status_signed_out));
                         }
                     });
             } else {
@@ -313,12 +325,33 @@ public class PlusFragment extends Fragment implements
                                 Log.e(TAG, "Google Play services error could not be "
                                     + "resolved: " + mSignInError);
                                 mSignInProgress = STATE_DEFAULT;
-                                status = getString(R.string.status_signed_out);
+                                setStatus(getString(R.string.status_signed_out));
                             }
                         }).create();
             }
         default:
             return null;
         }
+    }
+
+    private void setStatus(final String msg) {
+        this.status = msg;
+        //now tell any listeners that the status changed
+        Iterator<PlusStatusChangeListener> it = listeners.iterator();
+        while(it.hasNext()){
+            it.next().onPlusStatusChange(mGoogleApiClient.isConnected(), status);
+        }
+    }
+
+    public interface PlusStatusChangeListener {
+        public void onPlusStatusChange(boolean isConnected, String status);
+    }
+
+    void register(PlusStatusChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    void unRegister(PlusStatusChangeListener listener) {
+        listeners.remove(listener);
     }
 }

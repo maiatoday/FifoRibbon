@@ -190,6 +190,9 @@ public class MainActivity extends ActionBarActivity implements MainNavigation  {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // No action here, call super to delegate to Fragments
         super.onActivityResult(requestCode, resultCode, data);
+        // Because we are using startIntentSenderForResult in the PlusFragment it isn't getting the onActivityResult
+        // so I have to pass it here. bleargh
+        PlusFragment.getInstance(this).onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -18,7 +18,7 @@ import za.co.maiatoday.devart.R;
 /**
  * Created by maia on 2013/09/01.
  */
-public class InfoFragment extends Fragment implements View.OnClickListener {
+public class InfoFragment extends Fragment implements View.OnClickListener, PlusFragment.PlusStatusChangeListener {
     private TextView mInfoText;
     private SignInButton mSignInButton;
     private Button mSignOutButton;
@@ -74,13 +74,19 @@ public class InfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        setButtonsView();
+        setButtonsView(plusFragment.isConnected(), plusFragment.getStatus());
+        plusFragment.register(this);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        plusFragment.unRegister(this);
+    }
 
-    private void setButtonsView() {
+    private void setButtonsView(boolean isConnected, String msg) {
         //TODO fix display of state just after sign in or revoke
-        if (plusFragment.isConnected()) {
+        if (isConnected) {
             mSignInButton.setEnabled(false);
             mSignOutButton.setEnabled(true);
             mRevokeButton.setEnabled(true);
@@ -89,7 +95,7 @@ public class InfoFragment extends Fragment implements View.OnClickListener {
             mSignOutButton.setEnabled(false);
             mRevokeButton.setEnabled(false);
         }
-        mStatus.setText(plusFragment.getStatus());
+        mStatus.setText(msg);
     }
 
     @Override
@@ -108,5 +114,10 @@ public class InfoFragment extends Fragment implements View.OnClickListener {
             plusFragment.revoke();
             break;
         }
+    }
+
+    @Override
+    public void onPlusStatusChange(boolean isConnected, String status) {
+        setButtonsView(isConnected, status);
     }
 }

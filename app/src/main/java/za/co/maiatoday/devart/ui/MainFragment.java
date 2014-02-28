@@ -261,6 +261,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
         } else {
             selectedImageUri = data == null ? null : data.getData();
         }
+        processedImageUri = selectedImageUri;
         populateImageFromUri(selectedImageUri);
     }
 
