@@ -40,12 +40,19 @@ public class MedianCutQuantizer extends ColorQuantizer{
     private static final String TAG = MedianCutQuantizer.class.toString();
     private ColorNode[] imageColors = null;	// original (unique) image colors
     private ColorNode[] quantColors = null;	// quantized colors
+    int[] origPixels;
 
     public MedianCutQuantizer(Bitmap ip, int Kmax) {
-        //TODO fix this((int[]) ip.getPixels(), Kmax);
+        int w = ip.getWidth();
+        int h = ip.getHeight();
+        origPixels = new int[w*h];
+        ip.getPixels(origPixels, 0, w, 0, 0, w, h);
+        quantColors = findRepresentativeColors(origPixels, Kmax);
+        listColorNodes();
     }
 
     public MedianCutQuantizer(int[] pixels, int Kmax) {
+        origPixels = pixels;
         quantColors = findRepresentativeColors(pixels, Kmax);
         listColorNodes();
     }
