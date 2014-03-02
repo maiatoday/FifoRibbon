@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -30,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.plus.PlusShare;
@@ -63,6 +65,8 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
     private PlusFragment plusFragment;
     private MainNavigation mainActivity;
 
+    private LinearLayout chipStrip;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +95,8 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
         shareButton = (Button) view.findViewById(R.id.share_button);
         txtUpdate = (EditText) view.findViewById(R.id.txtUpdateStatus);
         plusFragment = PlusFragment.getInstance(getActivity());
+
+        chipStrip = (LinearLayout) view.findViewById(R.id.colorStrip);
 
         shareButton.setOnClickListener(new View.OnClickListener() {
 
@@ -129,6 +135,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
                 if (selfie.processSelfie()) {
                     imageView.setImageBitmap(selfie.getBmpToPost());
                     txtUpdate.setText(selfie.getStatus());
+                    addColorsToStrip(selfie.getColors());
                 }
 
             }
@@ -151,7 +158,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-           mainActivity = (MainNavigation) activity;
+            mainActivity = (MainNavigation) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                 + " must implement MainNavigation");
@@ -374,6 +381,22 @@ public class MainFragment extends Fragment implements View.OnTouchListener {   /
                 imageView.postDelayed(r, 2000);
             }
         }
+    }
+
+    public void addColorsToStrip(int[] colors) {
+        chipStrip.removeAllViews();
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        for (int i = 0; i < colors.length; i++) {
+            View v = inflater.inflate(R.layout.colourchip, null, false);
+            if ((i % 2) == 0) {
+                v.setBackgroundColor(colors[i]);
+            } else {
+                v.setBackgroundColor(Color.RED);
+            }
+            chipStrip.addView(v);
+        }
+
+        chipStrip.invalidate();
     }
 
 }

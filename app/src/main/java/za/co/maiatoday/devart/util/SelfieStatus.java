@@ -11,6 +11,7 @@ import android.util.Log;
 
 import java.util.Random;
 
+import za.co.maiatoday.devart.color.MedianCutQuantizer;
 import za.co.maiatoday.devart.glitchP5.GlitchFX;
 
 /**
@@ -27,6 +28,8 @@ public class SelfieStatus {
     private FaceDetector detector;
     private FaceDetector.Face[] faces;
     int facesFound;
+
+    int[] colors;
 
 //    private Scalar mBlobColorRgba;
 //    private Scalar mBlobColorHsv;
@@ -116,6 +119,7 @@ public class SelfieStatus {
             return true;
         }
         detectFaces();
+        detectColours();
         setupMats(orig);
         waysToChange = WaysToChange.rollDice(r);
         status = "#autoselfie " + waysToChange.toString();
@@ -144,6 +148,15 @@ public class SelfieStatus {
         Log.i("SelfieStatus", status);
         processDone = true;
         return true;
+    }
+
+    private void detectColours() {
+        MedianCutQuantizer mcq = new MedianCutQuantizer(orig, 10);
+        colors = mcq.getQuantizedColorsInt();
+    }
+
+    public int[] getColors() {
+        return colors;
     }
 
 

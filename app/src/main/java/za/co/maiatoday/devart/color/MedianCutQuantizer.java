@@ -1,6 +1,7 @@
 package za.co.maiatoday.devart.color;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -65,6 +66,16 @@ public class MedianCutQuantizer extends ColorQuantizer{
         return quantColors;
     }
 
+    public int[] getQuantizedColorsInt() {
+        int colors[] = new int[countQuantizedColors()];
+        int i = 0;
+        for (ColorNode color : quantColors) {
+            colors[i] = color.toInt();
+            i++;
+        }
+        return colors;
+    }
+
     ColorNode[] findRepresentativeColors(int[] pixels, int Kmax) {
         ColorHistogram colorHist = new ColorHistogram(pixels);
         int K = colorHist.getNumberOfColors();
@@ -109,35 +120,35 @@ public class MedianCutQuantizer extends ColorQuantizer{
         return qantPixels;
     }
 
-    public ByteProcessor quantizeImage(Bitmap cp) {
-        if (countQuantizedColors() > 256)
-            throw new Error("cannot index to more than 256 colors");
-        int w = cp.getWidth();
-        int h = cp.getHeight();
-        int[] origPixels = new int[w*h];
-        cp.getPixels(origPixels, 0, w, 0, 0, w, h);
-        byte[] idxPixels = new byte[origPixels.length];
-
-        for (int i = 0; i < origPixels.length; i++) {
-            idxPixels[i] = (byte) findClosestColorIndex(origPixels[i]);
-        }
-
-        IndexColorModel idxCm = makeIndexColorModel();
-        return new ByteProcessor(w, h, idxPixels, idxCm);
-    }
-
-    IndexColorModel makeIndexColorModel() {
-        int nColors = countQuantizedColors();
-        byte[] rMap = new byte[nColors];
-        byte[] gMap = new byte[nColors];
-        byte[] bMap = new byte[nColors];
-        for (int i=0; i<nColors; i++) {
-            rMap[i] = (byte) quantColors[i].red;
-            gMap[i] = (byte) quantColors[i].grn;
-            bMap[i] = (byte) quantColors[i].blu;
-        }
-        return new IndexColorModel(8, nColors, rMap, gMap, bMap);
-    }
+//    public ByteProcessor quantizeImage(Bitmap cp) {
+//        if (countQuantizedColors() > 256)
+//            throw new Error("cannot index to more than 256 colors");
+//        int w = cp.getWidth();
+//        int h = cp.getHeight();
+//        int[] origPixels = new int[w*h];
+//        cp.getPixels(origPixels, 0, w, 0, 0, w, h);
+//        byte[] idxPixels = new byte[origPixels.length];
+//
+//        for (int i = 0; i < origPixels.length; i++) {
+//            idxPixels[i] = (byte) findClosestColorIndex(origPixels[i]);
+//        }
+//
+//        IndexColorModel idxCm = makeIndexColorModel();
+//        return new ByteProcessor(w, h, idxPixels, idxCm);
+//    }
+//
+//    IndexColorModel makeIndexColorModel() {
+//        int nColors = countQuantizedColors();
+//        byte[] rMap = new byte[nColors];
+//        byte[] gMap = new byte[nColors];
+//        byte[] bMap = new byte[nColors];
+//        for (int i=0; i<nColors; i++) {
+//            rMap[i] = (byte) quantColors[i].red;
+//            gMap[i] = (byte) quantColors[i].grn;
+//            bMap[i] = (byte) quantColors[i].blu;
+//        }
+//        return new IndexColorModel(8, nColors, rMap, gMap, bMap);
+//    }
 
     ColorNode findClosestColor (int rgb) {
         int idx = findClosestColorIndex(rgb);
@@ -224,6 +235,10 @@ public class MedianCutQuantizer extends ColorQuantizer{
             String s = this.getClass().getSimpleName();
             s = s + " red=" + red + " green=" + grn + " blue=" + blu + " count=" + cnt;
             return s;
+        }
+
+        public int toInt() {
+            return Color.argb(255, red, grn, blu);
         }
     }
 

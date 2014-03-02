@@ -11,15 +11,13 @@ package za.co.maiatoday.devart.color;
  * Date: 2007/11/10
  */
 
-import android.graphics.Bitmap;
-
 /*
  * This abstract class is used a the superclass for color quantizers.
  */
 
 public abstract class ColorQuantizer {
 
-    public abstract ByteProcessor quantizeImage(Bitmap cp);
+//    public abstract ByteProcessor quantizeImage(Bitmap cp);
     public abstract int[] quantizeImage(int[] origPixels);
     public abstract int countQuantizedColors();
 

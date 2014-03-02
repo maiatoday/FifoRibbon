@@ -198,7 +198,7 @@ public class PlusFragment extends Fragment implements
         // The connection to Google Play services was lost for some reason.
         // We call connect() to attempt to re-establish the connection or get a
         // ConnectionResult that we can attempt to resolve.
-        mGoogleApiClient.connect();
+      //TODO fix  mGoogleApiClient.connect();
 
     }
 

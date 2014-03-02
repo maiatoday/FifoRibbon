@@ -25,7 +25,7 @@ public class ColorHistogram {
     }
 
     public ColorHistogram(Bitmap ip) {
-// TODO fix       this((int[]) ip.getPixels());
+     this(getPixelsFromBmp(ip));
     }
 
     ColorHistogram(int[] pixelsOrig) {
@@ -87,5 +87,13 @@ public class ColorHistogram {
 
     public int getCount(int index) {
         return this.countArray[index];
+    }
+
+    private static  int[] getPixelsFromBmp(Bitmap ip) {
+        int w = ip.getWidth();
+        int h = ip.getHeight();
+        int[] origPixels = new int[w*h];
+        ip.getPixels(origPixels, 0, w, 0, 0, w, h);
+        return origPixels;
     }
 }
