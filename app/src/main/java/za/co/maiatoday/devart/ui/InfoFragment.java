@@ -52,7 +52,7 @@ public class InfoFragment extends Fragment implements View.OnClickListener, Plus
         mInfoText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/search?q=%23autoselfie&s=typd&f=realtime")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://plus.google.com/s/%23autoselfie")));
             }
         });
 
