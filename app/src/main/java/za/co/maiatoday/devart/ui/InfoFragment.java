@@ -24,12 +24,10 @@ public class InfoFragment extends Fragment implements View.OnClickListener, Plus
     private Button mSignOutButton;
     private Button mRevokeButton;
     private TextView mStatus;
-    private PlusFragment plusFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        plusFragment = PlusFragment.getInstance(getActivity());
     }
 
     @Override
@@ -74,6 +72,7 @@ public class InfoFragment extends Fragment implements View.OnClickListener, Plus
     @Override
     public void onResume() {
         super.onResume();
+        PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
         setButtonsView(plusFragment.isConnected(), plusFragment.getStatus());
         plusFragment.register(this);
     }
@@ -81,19 +80,15 @@ public class InfoFragment extends Fragment implements View.OnClickListener, Plus
     @Override
     public void onPause() {
         super.onPause();
+        PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
         plusFragment.unRegister(this);
     }
 
     private void setButtonsView(boolean isConnected, String msg) {
-        if (isConnected) {
-            mSignInButton.setEnabled(false);
-            mSignOutButton.setEnabled(true);
-            mRevokeButton.setEnabled(true);
-        } else {
-            mSignInButton.setEnabled(true);
-            mSignOutButton.setEnabled(false);
-            mRevokeButton.setEnabled(false);
-        }
+
+        mSignInButton.setEnabled(!isConnected);
+        mSignOutButton.setEnabled(isConnected);
+        mRevokeButton.setEnabled(isConnected);
         mStatus.setText(msg);
     }
 
@@ -101,6 +96,7 @@ public class InfoFragment extends Fragment implements View.OnClickListener, Plus
     public void onClick(View v) {
         // We only process button clicks when GoogleApiClient is not transitioning
         // between connected and not connected.
+        PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
         switch (v.getId()) {
         case R.id.sign_in_button:
             mStatus.setText(R.string.status_signing_in);

@@ -66,12 +66,21 @@
             android:layout_height="wrap_content"
             android:enabled="false"
             />
-
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+    <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     <Button
             android:id="@+id/share_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Share on Google+"
-            android:layout_gravity="center"
+            android:visibility="gone"
             />
+    </LinearLayout>
 </LinearLayout>
