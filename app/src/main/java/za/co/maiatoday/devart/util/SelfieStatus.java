@@ -13,6 +13,8 @@ import java.util.Random;
 
 import za.co.maiatoday.devart.color.MedianCutQuantizer;
 import za.co.maiatoday.devart.glitchP5.GlitchFX;
+import za.co.maiatoday.devart.cogs.*;
+import java.util.*;
 
 /**
  * Created by maia on 2013/08/22.
@@ -30,6 +32,8 @@ public class SelfieStatus {
     int facesFound;
 
     int[] colors;
+	
+    Vector<BaseCog> boxOfCogs = new Vector<BaseCog>();
 
 //    private Scalar mBlobColorRgba;
 //    private Scalar mBlobColorHsv;
@@ -76,6 +80,7 @@ public class SelfieStatus {
         this.bmpToPost = orig;
         processDone = false;
         magic = orig.getWidth() / 16;
+		//TODO pick cogs
     }
 
     public Bitmap getBmpToPost() {
@@ -145,6 +150,9 @@ public class SelfieStatus {
             break;
 
         }
+		//TODO spin the cogs here
+		
+		//iterate through cogs and spin them boxOfCogs.
         Log.i("SelfieStatus", status);
         processDone = true;
         return true;
@@ -318,7 +326,7 @@ public class SelfieStatus {
         return bmpToPost;
     }
 
-    private void glitchEverything() {
+    private void glitchEverything() { // TODO remove
 //        mRgbaInnerWindow = setInnerMatfromEyes(mRgba);
         bmpToPost = orig.copy(orig.getConfig(), true);
         GlitchFX tempglitchfx = new GlitchFX(bmpToPost);
@@ -521,7 +529,7 @@ public class SelfieStatus {
         return out;
     }
 
-    private Bitmap eyeLargeBlocks(Bitmap in, int count) {
+    private Bitmap eyeLargeBlocks(Bitmap in, int count) {//TODO remove
         Bitmap out = in.copy(in.getConfig(), true);
         Paint drawPaint = new Paint();
 
@@ -565,7 +573,7 @@ public class SelfieStatus {
         return out;
     }
 
-    private Bitmap drawDots(Bitmap in) {
+    private Bitmap drawDots(Bitmap in) { //TODO remove
         Bitmap out = in.copy(in.getConfig(), true);
         Paint drawPaint = new Paint();
         int radius = in.getWidth() / 200;
@@ -596,14 +604,14 @@ public class SelfieStatus {
     }
 
 
-    public void glitchImage(RectF bounds, int extraMagic) {
+    public void glitchImage(RectF bounds, int extraMagic) {//TODO remove
         GlitchFX glitchfx;
         Bitmap bmp = bmpToPost.copy(bmpToPost.getConfig(), true);
         glitchfx = new GlitchFX(bmp);
         glitchImage(bounds, extraMagic, glitchfx);
     }
 
-    private void glitchImage(RectF bounds, int extraMagic, GlitchFX gg) {
+    private void glitchImage(RectF bounds, int extraMagic, GlitchFX gg) {//TODO remove
         if (gg == null) return;
         if (extraMagic == 0) {
             extraMagic = magic;
