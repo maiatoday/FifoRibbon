@@ -1,11 +1,20 @@
 package za.co.maiatoday.devart.cogs;
-import android.graphics.*;
+
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PointF;
 import android.util.Log;
 
 public class EyeBlockCog extends BaseCog
 {
 
-	@Override
+    public EyeBlockCog(CogBuilder builder) {
+        super(builder);
+    }
+
+    @Override
 	public Bitmap spin(Bitmap in)
 	{
 		int count = 4;

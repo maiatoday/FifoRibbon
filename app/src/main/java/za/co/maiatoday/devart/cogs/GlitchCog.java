@@ -1,16 +1,21 @@
 package za.co.maiatoday.devart.cogs;
-import android.graphics.*;
+
+import android.graphics.Bitmap;
+import android.graphics.RectF;
+
 import za.co.maiatoday.devart.glitchP5.GlitchFX;
 
-public class GlitchCog extends BaseCog
-{
-	private int magic = 20;
+public class GlitchCog extends BaseCog {
+    private int magic = 20;
 
-	@Override
-	public Bitmap spin(Bitmap in)
-	{
-		out = super.spin(in);
-		GlitchFX tempglitchfx = new GlitchFX(out);
+    public GlitchCog(CogBuilder builder) {
+        super(builder);
+    }
+
+    @Override
+    public Bitmap spin(Bitmap in) {
+        out = super.spin(in);
+        GlitchFX tempglitchfx = new GlitchFX(out);
 //        RectF wholePic = new RectF(0, 0, bmpToPost.getWidth(), bmpToPost.getHeight());
 //        int xjump = bmpToPost.getWidth()/16;
         int yjump = out.getHeight() / 16;
@@ -21,10 +26,10 @@ public class GlitchCog extends BaseCog
             dx = r.nextInt(yjump * 2) - yjump;
 
         }
-		return out;
-	}
-	
-	private void glitchImage(RectF bounds, int extraMagic, GlitchFX gg) {
+        return out;
+    }
+
+    private void glitchImage(RectF bounds, int extraMagic, GlitchFX gg) {
         if (gg == null) return;
         if (extraMagic == 0) {
             extraMagic = magic;
