@@ -19,7 +19,6 @@ import za.co.maiatoday.devart.color.MedianCutQuantizer;
  * Created by maia on 2013/08/22.
  */
 public class SelfieStatus {
-    private static final int DRIP_COUNT = 20;
     Bitmap bmpToPost;
     String status;
     Bitmap orig;
@@ -34,7 +33,6 @@ public class SelfieStatus {
 	
     Vector<BaseCog> boxOfCogs = new Vector<BaseCog>();
 
-    private int magic = 20;
     private WaysToChange waysToChange = WaysToChange.EIGHT_BIT_ROY;
 
     Random r = new Random(System.currentTimeMillis());
@@ -71,7 +69,6 @@ public class SelfieStatus {
         this.orig = orig;
         this.bmpToPost = orig;
         processDone = false;
-        magic = orig.getWidth() / 16;
         detectFaces();
         detectColours();
     }
@@ -80,9 +77,9 @@ public class SelfieStatus {
         //TODO pick cogs
 //        waysToChange = WaysToChange.rollDice(r);
         boxOfCogs.clear();
-        boxOfCogs.add(new DotCog(faces, colors));
-        boxOfCogs.add(new GlitchCog(faces, colors));
-        boxOfCogs.add(new EyeBlockCog(faces, colors));
+        boxOfCogs.add(new DotCog(faces, facesFound, colors));
+        boxOfCogs.add(new GlitchCog(faces, facesFound, colors));
+        boxOfCogs.add(new EyeBlockCog(faces, facesFound, colors));
 
     }
 
@@ -106,7 +103,7 @@ public class SelfieStatus {
             return true;
         }
         status = "#autoselfie ";
-        Bitmap bmpToPost = BaseCog.copy(orig);
+        bmpToPost = BaseCog.copy(orig);
         for (BaseCog cog : boxOfCogs) {
            bmpToPost = cog.spin(bmpToPost, false);
            status += cog.getStatus();

@@ -10,8 +10,8 @@ import android.util.Log;
 
 public class EyeBlockCog extends BaseCog {
 
-    public EyeBlockCog(FaceDetector.Face[] face, int[] colors) {
-        super(face, colors);
+    public EyeBlockCog(FaceDetector.Face[] face, int facesFound, int[] colors) {
+        super(face, facesFound, colors);
     }
 
     @Override

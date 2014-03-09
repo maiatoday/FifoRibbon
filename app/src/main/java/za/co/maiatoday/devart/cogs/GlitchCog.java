@@ -9,8 +9,8 @@ import za.co.maiatoday.devart.glitchP5.GlitchFX;
 public class GlitchCog extends BaseCog {
     private int magic = 20;
 
-    public GlitchCog(FaceDetector.Face[] face, int[] colors) {
-        super(face, colors);
+    public GlitchCog(FaceDetector.Face[] face, int facesFound, int[] colors) {
+        super(face, facesFound, colors);
     }
 
     @Override

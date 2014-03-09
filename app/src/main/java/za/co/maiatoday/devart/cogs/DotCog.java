@@ -12,8 +12,8 @@ import android.media.FaceDetector;
 public class DotCog extends BaseCog {
 
 
-    public DotCog(FaceDetector.Face[] face, int[] colors) {
-        super(face, colors);
+    public DotCog(FaceDetector.Face[] face, int facesFound, int[] colors) {
+        super(face, facesFound, colors);
     }
 
     @Override

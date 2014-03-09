@@ -16,8 +16,9 @@ public abstract class BaseCog {
 	Random r = new Random(System.currentTimeMillis());
     private String mStatus;
 
-    public BaseCog(FaceDetector.Face[] face, int[] colors) {
+    public BaseCog(FaceDetector.Face[] face, int facesFound, int[] colors) {
         this.faces = face;
+        this.facesFound = facesFound;
         this.colors = colors;
 
     }
