@@ -315,6 +315,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
 
         if (bitmap != null) {
             selfie.setOrig(bitmap);
+            selfie.pickCogs();
             mSelfieImage.setImageBitmap(bitmap);
             Matrix matrix = mSelfieImage.getImageMatrix();
             matrix.invert(inverseMatrix);
@@ -341,7 +342,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
                 path.lineTo(event.getX(), event.getY());
                 RectF bounds = new RectF();
                 path.computeBounds(bounds, false);
-                selfie.glitchImage(convertFromViewToImage(bounds), 0);
+//                selfie.glitchImage(convertFromViewToImage(bounds), 0);
 //                bitmap = drawPath(selfie.getBmpToPost(), path, pathColor); //The path is in the wrong place
 //                mSelfieImage.setImageBitmap(selfie.getBmpToPost());
                 break;

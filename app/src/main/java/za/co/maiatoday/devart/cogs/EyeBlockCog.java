@@ -5,20 +5,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.media.FaceDetector;
 import android.util.Log;
 
-public class EyeBlockCog extends BaseCog
-{
+public class EyeBlockCog extends BaseCog {
 
-    public EyeBlockCog(CogBuilder builder) {
-        super(builder);
+    public EyeBlockCog(FaceDetector.Face[] face, int[] colors) {
+        super(face, colors);
     }
 
     @Override
-	public Bitmap spin(Bitmap in)
-	{
-		int count = 4;
-		super.spin(in);
+    public Bitmap spin(Bitmap in, boolean copy) {
+        this.mIn = in;
+        if (copy) {
+            this.mOut = copy(mIn);
+        } else {
+            this.mOut = mIn;
+        }
+        int count = 4;
         Paint drawPaint = new Paint();
 
         drawPaint.setColor(Color.MAGENTA);
@@ -26,7 +30,7 @@ public class EyeBlockCog extends BaseCog
         drawPaint.setStrokeWidth(1);
 
         Canvas canvas = new Canvas();
-        canvas.setBitmap(out);
+        canvas.setBitmap(mOut);
 
         PointF midPoint = new PointF();
         float eyeDistance = 0.0f;
@@ -40,9 +44,10 @@ public class EyeBlockCog extends BaseCog
                 confidence = faces[index].confidence();
 
                 Log.i("FaceDetector",
-					  "Confidence: " + confidence +
-					  ", Eye distance: " + eyeDistance +
-					  ", Mid Point: (" + midPoint.x + ", " + midPoint.y + ")");
+                    "Confidence: " + confidence +
+                        ", Eye distance: " + eyeDistance +
+                        ", Mid Point: (" + midPoint.x + ", " + midPoint.y + ")"
+                );
                 for (int of = 0; of < count; of += 1) {
                     if (of % 2 == 0) {
                         drawPaint.setColor(Color.MAGENTA);
@@ -52,13 +57,14 @@ public class EyeBlockCog extends BaseCog
                         drawPaint.setColor(Color.YELLOW);
                     }
                     canvas.drawRect((int) midPoint.x - eyeDistance + of,
-									(int) midPoint.y - eyeDistance / 2 + of * jump,
-									(int) midPoint.x + eyeDistance + of * jump,
-									(int) midPoint.y + eyeDistance / 2 + of * jump, drawPaint);
+                        (int) midPoint.y - eyeDistance / 2 + of * jump,
+                        (int) midPoint.x + eyeDistance + of * jump,
+                        (int) midPoint.y + eyeDistance / 2 + of * jump, drawPaint);
                 }
             }
         }
-        return out;
-	}
-	
+        setStatus("eye ");
+        return mOut;
+    }
+
 }

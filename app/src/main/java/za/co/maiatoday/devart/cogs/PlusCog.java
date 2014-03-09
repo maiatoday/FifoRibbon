@@ -1,8 +1,21 @@
 package za.co.maiatoday.devart.cogs;
 
-public class PlusCog extends BaseCog {
+import android.graphics.Bitmap;
+import android.media.FaceDetector;
 
-    public PlusCog(CogBuilder builder) {
-        super(builder);
+public class PlusCog extends BaseCog {
+    public PlusCog(FaceDetector.Face[] face, int[] colors) {
+        super(face, colors);
+    }
+
+    @Override
+    public Bitmap spin(Bitmap in, boolean copy) {
+        this.mIn = in;
+        if (copy) {
+            this.mOut = copy(mIn);
+        } else {
+            this.mOut = mIn;
+        }
+        return mOut;
     }
 }

@@ -1,49 +1,39 @@
 package za.co.maiatoday.devart.cogs;
 
+import android.graphics.Bitmap;
 import android.media.FaceDetector;
-import android.graphics.*;
+
 import java.util.Random;
 /**
  * Created by maia on 2014/03/07.
  */
-public class BaseCog {
+public abstract class BaseCog {
     protected FaceDetector.Face[] faces;
 	int facesFound;
     int[] colors;
-	Bitmap in,out;
+	Bitmap mIn, mOut;
 	
 	Random r = new Random(System.currentTimeMillis());
-	
-    public BaseCog(CogBuilder builder) {
-        faces = builder.faces;
-		facesFound = faces.length;
-        colors = builder.colors;
+    private String mStatus;
+
+    public BaseCog(FaceDetector.Face[] face, int[] colors) {
+        this.faces = face;
+        this.colors = colors;
+
     }
 	
-	public Bitmap spin(Bitmap in) {
-		out = in.copy(in.getConfig(), true);
-		return out;
-	}
+	abstract public Bitmap spin(Bitmap in, boolean copy);
 
+    public static Bitmap copy(Bitmap in) {
+       return in.copy(in.getConfig(), true);
+    }
 
-    public static class CogBuilder {
-        private FaceDetector.Face[] faces;
-        int[] colors;
+    public String getStatus() {
+        return mStatus;
+    }
 
-        public BaseCog build() {
-            return new BaseCog(this);
-        }
-
-        CogBuilder setFaces(FaceDetector.Face[] face) {
-            this.faces = faces;
-            return this;
-        }
-
-        CogBuilder setColors(int[] colors) {
-            this.colors = colors;
-            return this;
-        }
-
+    protected void setStatus(String status) {
+        this.mStatus = status;
     }
 }
 

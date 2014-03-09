@@ -4,31 +4,36 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.FaceDetector;
 
 /**
  * cog to draw psuedo benday dots
  */
 public class DotCog extends BaseCog {
 
-    public DotCog(CogBuilder builder) {
-        super(builder);
+
+    public DotCog(FaceDetector.Face[] face, int[] colors) {
+        super(face, colors);
     }
 
     @Override
-    public Bitmap spin(Bitmap in) {
-
-        super.spin(in);
-
+    public Bitmap spin(Bitmap in, boolean copy) {
+        this.mIn = in;
+        if (copy) {
+            this.mOut = copy(mIn);
+        } else {
+            this.mOut = mIn;
+        }
         Paint drawPaint = new Paint();
-        int radius = in.getWidth() / 200;
+        int radius = mIn.getWidth() / 200;
         drawPaint.setStyle(Paint.Style.FILL);
 
         Canvas canvas = new Canvas();
-        canvas.setBitmap(out);
+        canvas.setBitmap(mOut);
         int newBlack = Color.argb(0xff, 0x16, 0x16, 0x16);
-        for (int x = 0; x < in.getWidth(); x += radius * 4) {
-            for (int y = 0; y < in.getHeight(); y += radius * 4) {
-                int p = in.getPixel(x, y);
+        for (int x = 0; x < mIn.getWidth(); x += radius * 4) {
+            for (int y = 0; y < mIn.getHeight(); y += radius * 4) {
+                int p = mIn.getPixel(x, y);
 //                int pixelAlpha=   Color.alpha(p);
 //                int red =  Color.red(p);
 //                int green=    Color.green(p);
@@ -43,8 +48,9 @@ public class DotCog extends BaseCog {
                 }
             }
         }
+        setStatus("dot ");
 
-        return out;
+        return mOut;
     }
 
 }
