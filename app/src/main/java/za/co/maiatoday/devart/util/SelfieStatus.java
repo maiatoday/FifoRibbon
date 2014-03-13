@@ -78,11 +78,13 @@ public class SelfieStatus {
 //        waysToChange = WaysToChange.rollDice(r);
         boxOfCogs.clear();
         int cogLoop = r.nextInt(6);
+        boxOfCogs.add(new DotCog(faces, facesFound, colors));
         for (int i = 0; i <= cogLoop; i++ ) {
-            boxOfCogs.add(new DotCog(faces, facesFound, colors));
             boxOfCogs.add(new GlitchCog(faces, facesFound, colors));
             boxOfCogs.add(new EyeBlockCog(faces, facesFound, colors));
         }
+        boxOfCogs.add(new EyeBlockCog(faces, facesFound, colors));
+        boxOfCogs.add(new DotCog(faces, facesFound, colors));
 
     }
 
