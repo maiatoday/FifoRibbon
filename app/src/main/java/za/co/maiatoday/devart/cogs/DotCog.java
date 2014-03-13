@@ -6,14 +6,21 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.FaceDetector;
 
+import java.util.Vector;
+
 /**
  * cog to draw psuedo benday dots
  */
 public class DotCog extends BaseCog {
 
-
+    Vector<float[]> colorHSV = new Vector<float[]>();
     public DotCog(FaceDetector.Face[] face, int facesFound, int[] colors) {
         super(face, facesFound, colors);
+        for (int i = 0; i< colors.length; i++) {
+            float[] hsv = new float[3];
+            Color.colorToHSV(colors[i], hsv);
+            colorHSV.add(hsv);
+        }
     }
 
     @Override
@@ -39,13 +46,22 @@ public class DotCog extends BaseCog {
 //                int green=    Color.green(p);
 //                int blue=    Color.blue(p);
 //                int newColor = Color.argb(pixelAlpha, red + 5, green + 5, blue + 5);
-                if (p == Color.BLACK) {
-                    drawPaint.setColor(newBlack);
-                    canvas.drawCircle(x, y, radius, drawPaint);
-                } else if (p == Color.RED) {
-                    drawPaint.setColor(Color.MAGENTA);
-                    canvas.drawCircle(x, y, radius, drawPaint);
+                float[] pHSV = new float[3];
+                Color.colorToHSV(p, pHSV);
+                for (float[] hsv : colorHSV ) {
+                   if ((pHSV[0] == hsv[0] || pHSV[1] == hsv[1] || pHSV[2] == hsv[2]))  {
+                       drawPaint.setColor(Color.MAGENTA);
+                       canvas.drawCircle(x, y, radius, drawPaint);
+                   }
                 }
+
+//                if (p == Color.BLACK) {
+//                    drawPaint.setColor(newBlack);
+//                    canvas.drawCircle(x, y, radius, drawPaint);
+//                } else if (p == Color.RED) {
+//                    drawPaint.setColor(Color.MAGENTA);
+//                    canvas.drawCircle(x, y, radius, drawPaint);
+//                }
             }
         }
         setStatus("dot ");
