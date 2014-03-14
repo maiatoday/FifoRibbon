@@ -69,6 +69,7 @@ public class PlusFragment extends Fragment implements
     // Used to store the error code most recently returned by Google Play services
     // until the user clicks 'sign in'.
     private int mSignInError;
+    private Person currentPerson;
 
 
     public boolean isConnected() {
@@ -182,7 +183,7 @@ public class PlusFragment extends Fragment implements
         // Indicate that the sign in process is complete.
         // Retrieve some profile information to personalize our app for the user.
         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+            currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
             String personName = currentPerson.getDisplayName();
             setStatus(String.format(
                 getResources().getString(R.string.signed_in_as),
@@ -355,5 +356,19 @@ public class PlusFragment extends Fragment implements
 
     void unRegister(PlusStatusChangeListener listener) {
         listeners.remove(listener);
+    }
+
+    /**
+     * Get an image asset for this user, either the image or the cover image
+     * @return
+     */
+    public String getImageUrl() {
+        String res = "";
+        if (currentPerson.hasImage()) {
+            res = currentPerson.getImage().getUrl();
+        } else if (currentPerson.hasCover()) {
+            res = currentPerson.getCover().getCoverPhoto().getUrl();
+        }
+        return res;
     }
 }
