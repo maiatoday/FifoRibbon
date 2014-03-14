@@ -88,7 +88,7 @@ public class PlusFragment extends Fragment implements
     }
 
     /**
-     * Create a new instance of HomeFragment, with parameters passed in a bundle
+     * Create a new instance of PlusFragment, with parameters passed in a bundle
      */
     public static PlusFragment getInstance(FragmentActivity activity) {
 

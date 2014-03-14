@@ -100,6 +100,10 @@ public class SelfieStatus {
         this.status = status;
     }
 
+    public boolean isProcessDone() {
+        return processDone;
+    }
+
     public boolean processSelfie() {
         if (orig == null) {
             return false;

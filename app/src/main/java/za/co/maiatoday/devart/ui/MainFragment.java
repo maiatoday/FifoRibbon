@@ -19,7 +19,6 @@ import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,7 +42,6 @@ import java.util.List;
 
 import za.co.maiatoday.devart.R;
 import za.co.maiatoday.devart.util.ImageUtils;
-import za.co.maiatoday.devart.util.SelfieStatus;
 
 /**
  * Created by maia on 2013/09/01.
@@ -56,8 +54,6 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
     private Uri shareUri;
     private ImageView mSelfieImage;
     Button mSnapButton;
-
-    SelfieStatus selfie = new SelfieStatus();
 
     private Path path;
     private boolean debugHide = true;
@@ -103,6 +99,10 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
 
         showPlusButtons(plusFragment.isConnected());
 
+        BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+        bbFragment.setImageView(mSelfieImage);
+        bbFragment.setTextView(mUpdateText);
+
         mShareButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -130,10 +130,11 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
             @Override
             public void onClick(View arg0) {
                 // debug so I don't have to get another pic but can try another algorithm
-                selfie.setProcessDone(false);
                 if (bitmap != null) {
-                    selfie.setOrig(bitmap);
+                    BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+                    bbFragment.shake();
                 }
+                // get a new image
                 openImageIntent();
             }
         });
@@ -146,17 +147,22 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         mSelfieImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selfie.processSelfie()) {
-                    mSelfieImage.setImageBitmap(selfie.getBmpToPost());
-                    mUpdateText.setText(selfie.getStatus());
-                    addColorsToStrip(selfie.getColors());
-                }
-
+                BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+                bbFragment.turnHandle();
             }
         });
 
         mSelfieImage.setOnTouchListener(this);
         return view;
+    }
+
+    /**
+     * Update the views from the blackbox
+     */
+    private void updateViews() {
+        BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+        mSelfieImage.setImageBitmap(bbFragment.getBitmap());
+        mUpdateText.setText(bbFragment.getStatus());
     }
 
     private void showPlusButtons(boolean isConnected) {
@@ -207,8 +213,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
             switch (requestCode) {
             case REQUEST_IMAGE:
                 processImage(data);
-                mSelfieImage.setImageBitmap(selfie.getBmpToPost());
-                mUpdateText.setText(selfie.getStatus());
+                updateViews();
                 break;
             }
         }
@@ -314,8 +319,10 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         }
 
         if (bitmap != null) {
-            selfie.setOrig(bitmap);
-            selfie.pickCogs();
+
+            BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+            bbFragment.setBitmap(bitmap);
+            bbFragment.shake();
             mSelfieImage.setImageBitmap(bitmap);
             Matrix matrix = mSelfieImage.getImageMatrix();
             matrix.invert(inverseMatrix);
@@ -375,14 +382,10 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
     private Uri processedImageUri;
 
     private void processImageToShare(boolean plus) {
-        if (selfie.processSelfie()) {
-            mSelfieImage.setImageBitmap(selfie.getBmpToPost());
-            if (!TextUtils.isEmpty(mUpdateText.getText().toString())) {
-                selfie.setStatus(mUpdateText.getText().toString());
-            }
-
+        BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+        if (bbFragment.isDone()) {
             // Launch the Google+ share dialog with attribution to your app.
-            processedImageUri = ImageUtils.saveBitmapToFile(selfie.getBmpToPost(), getActivity());
+            processedImageUri = ImageUtils.saveBitmapToFile(bbFragment.getBitmap(), getActivity());
             ContentResolver cr = getActivity().getContentResolver();
             String mime = cr.getType(processedImageUri);
             Intent shareIntent;
@@ -401,16 +404,17 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
                 shareIntent.putExtra(Intent.EXTRA_STREAM, processedImageUri);
             }
             startActivityForResult(shareIntent, 0);
-
+            final Bitmap orig = bbFragment.getOriginalBitmap();
             if (debugHide) {
                 Runnable r = new Runnable() {
                     public void run() {
-                        mSelfieImage.setImageBitmap(selfie.getOrig());
+                        mSelfieImage.setImageBitmap(orig);
                     }
                 };
                 mSelfieImage.postDelayed(r, 2000);
             }
         }
+
     }
 
     public void addColorsToStrip(int[] colors) {
