@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -417,24 +416,10 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
 
     }
 
-    public void addColorsToStrip(int[] colors) {
-        mChipStrip.removeAllViews();
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        for (int i = 0; i < colors.length; i++) {
-            View v = inflater.inflate(R.layout.colourchip, null, false);
-            if ((i % 2) == 0) {
-                v.setBackgroundColor(colors[i]);
-            } else {
-                v.setBackgroundColor(Color.RED);
-            }
-            mChipStrip.addView(v);
-        }
-
-        mChipStrip.invalidate();
-    }
-
     @Override
     public void onPlusStatusChange(boolean isConnected, String status) {
         showPlusButtons(isConnected);
+        BlackBoxFragment b = BlackBoxFragment.getInstance(getActivity());
+        b.makeDefaultImage();
     }
 }

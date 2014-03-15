@@ -132,4 +132,11 @@ public class BlackBoxFragment extends Fragment {
         }
     }
 
+    public void makeDefaultImage() {
+        PlusFragment p = PlusFragment.getInstance(getActivity());
+        String imageUrl = p.getImageUrl();
+        String s2 = p.getInfoString();
+        String s3 = p.getAnotherString();
+    }
+
 }

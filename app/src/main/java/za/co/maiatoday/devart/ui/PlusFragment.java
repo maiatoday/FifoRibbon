@@ -364,11 +364,42 @@ public class PlusFragment extends Fragment implements
      */
     public String getImageUrl() {
         String res = "";
-        if (currentPerson.hasImage()) {
-            res = currentPerson.getImage().getUrl();
-        } else if (currentPerson.hasCover()) {
-            res = currentPerson.getCover().getCoverPhoto().getUrl();
+        if (currentPerson != null) {
+            if (currentPerson.hasImage()) {
+                res = currentPerson.getImage().getUrl();
+            } else if (currentPerson.hasCover()) {
+                res = currentPerson.getCover().getCoverPhoto().getUrl();
+            }
         }
         return res;
     }
+
+    public String getInfoString() {
+        String res = "";
+        if (currentPerson != null) {
+            if (currentPerson.hasNickname()) {
+                res = currentPerson.getNickname();
+            } else if (currentPerson.hasDisplayName()) {
+                res = currentPerson.getDisplayName();
+            } else if (currentPerson.hasName()) {
+                res = currentPerson.getName().getFormatted();
+            } else if (currentPerson.hasTagline()) {
+                res = currentPerson.getTagline();
+            }
+        }
+        return res;
+    }
+
+    public String getAnotherString() {
+        String res = "";
+        if (currentPerson != null) {
+            if (currentPerson.hasUrl()) {
+                res = currentPerson.getUrl();
+            } else if (currentPerson.hasLanguage()) {
+                res = currentPerson.getLanguage();
+            }
+        }
+        return res;
+    }
+
 }
