@@ -23,7 +23,7 @@ local.properties
 
 #configurations
 keystore.properties
-maiatodayandroid.keystore
+*.keystore
 
 #temporary files
 *~
