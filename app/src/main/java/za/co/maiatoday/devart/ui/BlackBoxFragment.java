@@ -1,14 +1,21 @@
 package za.co.maiatoday.devart.ui;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import za.co.maiatoday.devart.R;
 import za.co.maiatoday.devart.util.SelfieStatus;
 
 /**
@@ -18,11 +25,12 @@ import za.co.maiatoday.devart.util.SelfieStatus;
  */
 public class BlackBoxFragment extends Fragment {
     private static String TAG = BlackBoxFragment.class.toString();
-    SelfieStatus selfie = new SelfieStatus();
+    SelfieStatus mSelfie = new SelfieStatus();
 
     ImageView mImageView;
     TextView mTextView;
-    private BlackBoxTask blackBoxTask;
+    private BlackBoxTask mBlockBoxTask;
+    private LoadBitmapTask mLoadUrlTask;
 
     public BlackBoxFragment() {
     }
@@ -55,8 +63,11 @@ public class BlackBoxFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (blackBoxTask != null) {
-            blackBoxTask.cancel(true);
+        if (mBlockBoxTask != null) {
+            mBlockBoxTask.cancel(true);
+        }
+        if (mLoadUrlTask != null) {
+            mLoadUrlTask.cancel(true);
         }
     }
 
@@ -64,16 +75,16 @@ public class BlackBoxFragment extends Fragment {
      * Shake the box to choose different cogs
      */
     public void shake() {
-        selfie.setProcessDone(false);
-        selfie.pickCogs();
+        mSelfie.setProcessDone(false);
+        mSelfie.pickCogs();
     }
 
     /**
      * Turn the handle to make the cogs change the image
      */
     public void turnHandle() {
-        blackBoxTask = new BlackBoxTask();
-        blackBoxTask.execute();
+        mBlockBoxTask = new BlackBoxTask();
+        mBlockBoxTask.execute();
     }
 
     /**
@@ -93,31 +104,31 @@ public class BlackBoxFragment extends Fragment {
     }
 
     public String getStatus() {
-        return selfie.getStatus();
+        return mSelfie.getStatus();
     }
 
     public Bitmap getBitmap() {
-        return selfie.getBmpToPost();
+        return mSelfie.getBmpToPost();
     }
 
     public Bitmap getOriginalBitmap() {
-        return selfie.getOrig();
+        return mSelfie.getOrig();
     }
 
     public void setBitmap(Bitmap bitmap) {
-        selfie.setOrig(bitmap);
+        mSelfie.setOrig(bitmap);
     }
 
     public boolean isDone() {
-        return selfie.isProcessDone();
+        return mSelfie.isProcessDone();
     }
 
     private class BlackBoxTask extends AsyncTask<Void, Void, Bitmap> {
 
         @Override
         protected Bitmap doInBackground(Void... params) {
-            selfie.processSelfie();
-            return selfie.getBmpToPost();
+            mSelfie.processSelfie();
+            return mSelfie.getBmpToPost();
         }
 
         @Override
@@ -127,8 +138,35 @@ public class BlackBoxFragment extends Fragment {
                 mImageView.setImageBitmap(bitmap);
             }
             if (mTextView != null) {
-                mTextView.setText(selfie.getStatus());
+                mTextView.setText(mSelfie.getStatus());
             }
+        }
+    }
+
+    private class LoadBitmapTask extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            URL url = null;
+            Bitmap bmp = null;
+            try {
+                url = new URL(params[0]);
+                bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }  catch (IOException e) {
+                e.printStackTrace();
+            }
+            return bmp;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            mImageView.setImageBitmap(bitmap);
+            setBitmap(bitmap);
+//            shake();
+//            turnHandle();
         }
     }
 
@@ -137,6 +175,14 @@ public class BlackBoxFragment extends Fragment {
         String imageUrl = p.getImageUrl();
         String s2 = p.getInfoString();
         String s3 = p.getAnotherString();
+        if (mImageView != null) {
+            if (!TextUtils.isEmpty(imageUrl)) {
+                mLoadUrlTask = new LoadBitmapTask();
+                mLoadUrlTask.execute(new String[]{imageUrl});
+            } else {
+                mImageView.setImageResource(R.drawable.autoselfie_help);
+            }
+        }
     }
 
 }

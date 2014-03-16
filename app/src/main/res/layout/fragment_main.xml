@@ -23,42 +23,42 @@
             android:scaleType="fitCenter"
             android:src="@drawable/autoselfie_help"
             />
-    <LinearLayout
-            android:id="@+id/colorStrip"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/colorchip_size"
-            android:orientation="horizontal">
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8000"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8400"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8800"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8f00"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8040"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8000"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8080"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#80a0"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8004"/>
-        <View android:layout_width="@dimen/colorchip_size"
-              android:layout_height="@dimen/colorchip_size"
-              android:background="#8008"/>
-            </LinearLayout>
+    <!--<LinearLayout-->
+            <!--android:id="@+id/colorStrip"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/colorchip_size"-->
+            <!--android:orientation="horizontal">-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8000"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8400"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8800"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8f00"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8040"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8000"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8080"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#80a0"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8004"/>-->
+        <!--<View android:layout_width="@dimen/colorchip_size"-->
+              <!--android:layout_height="@dimen/colorchip_size"-->
+              <!--android:background="#8008"/>-->
+            <!--</LinearLayout>-->
 
     <EditText
             android:id="@+id/txtUpdateStatus"

@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.PlusClient;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
 
@@ -32,7 +33,7 @@ import za.co.maiatoday.devart.R;
  * Created by maia on 2014/02/22.
  */
 public class PlusFragment extends Fragment implements
-    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<People.LoadPeopleResult> {
+    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<People.LoadPeopleResult>, PlusClient.OnAccessRevokedListener {
     private static String TAG = PlusFragment.class.toString();
 
     private static final int STATE_DEFAULT = 0;
@@ -310,6 +311,8 @@ public class PlusFragment extends Fragment implements
         }
     }
 
+
+
     protected Dialog onCreateDialog(int id) {
         switch(id) {
         case DIALOG_PLAY_SERVICES_ERROR:
@@ -369,6 +372,14 @@ public class PlusFragment extends Fragment implements
         } else {
             Log.e(TAG, "Error requesting visible circles: " + peopleData.getStatus());
         }
+    }
+
+    @Override
+    public void onAccessRevoked(ConnectionResult connectionResult) {
+
+        currentPerson = null;
+        peopleCount = 0;
+
     }
 
     public interface PlusStatusChangeListener {

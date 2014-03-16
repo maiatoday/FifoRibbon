@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.SignInButton;
@@ -60,8 +59,6 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
     private Bitmap bitmap;
     private Matrix inverseMatrix = new Matrix();
     private MainNavigation mainActivity;
-
-    private LinearLayout mChipStrip;
     private SignInButton mSignInButton;
 
 	private boolean imageSet;
@@ -95,8 +92,6 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         mShareButton = (Button) view.findViewById(R.id.share_button);
         mUpdateText = (EditText) view.findViewById(R.id.txtUpdateStatus);
         PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
-
-        mChipStrip = (LinearLayout) view.findViewById(R.id.colorStrip);
 
         showPlusButtons(plusFragment.isConnected());
 
@@ -198,6 +193,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
         plusFragment.register(this);
         showPlusButtons(plusFragment.isConnected());
+        populateDefaultImage();
     }
 
     @Override
@@ -352,9 +348,9 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
 					path.lineTo(event.getX(), event.getY());
 					RectF bounds = new RectF();
 					path.computeBounds(bounds, false);
-//                selfie.glitchImage(convertFromViewToImage(bounds), 0);
-//                bitmap = drawPath(selfie.getBmpToPost(), path, pathColor); //The path is in the wrong place
-//                mSelfieImage.setImageBitmap(selfie.getBmpToPost());
+//                mSelfie.glitchImage(convertFromViewToImage(bounds), 0);
+//                bitmap = drawPath(mSelfie.getBmpToPost(), path, pathColor); //The path is in the wrong place
+//                mSelfieImage.setImageBitmap(mSelfie.getBmpToPost());
 					break;
             }
         }
@@ -423,9 +419,19 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
     @Override
     public void onPlusStatusChange(boolean isConnected, String status) {
         showPlusButtons(isConnected);
-        BlackBoxFragment b = BlackBoxFragment.getInstance(getActivity());
+        populateDefaultImage();
+    }
+
+    private void populateDefaultImage() {
         if (!imageSet) {
-			b.makeDefaultImage();
+            PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
+            if (plusFragment.isConnected()) {
+                BlackBoxFragment b = BlackBoxFragment.getInstance(getActivity());
+                b.makeDefaultImage();
+                imageSet = true;
+            } else {
+                mSelfieImage.setImageResource(R.drawable.autoselfie_help);
+            }
 		}
     }
 }
