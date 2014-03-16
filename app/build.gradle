@@ -10,8 +10,14 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        release {
+            storeFile file("maiatodayandroid.keystore")
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
@@ -23,4 +29,31 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.0.0'
     compile 'com.google.android.gms:play-services:+'
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+}
+allprojects {
+    afterEvaluate { project ->
+        def propsFile = rootProject.file('keystore.properties')
+        def configName = 'release'
+        if (propsFile.exists()) {
+            println "Found keystore.properties file"
+            // Debug prinln
+//            def props = new Properties()
+//            props.load(new FileInputStream(propsFile))
+//            props.each { key, val ->
+//                println "property name=${key} value=${val}"
+//            }
+        }
+//        def keyStoreFile = file("somefile.keystore")
+//        if (keyStoreFile.exists()) {
+//            println "--- found the somefile.keystore file"
+//        }
+        if (propsFile.exists() && android.signingConfigs.hasProperty(configName)) {
+            println "Setting up signing properties for $configName"
+            def props = new Properties()
+            props.load(new FileInputStream(propsFile))
+            android.signingConfigs[configName].storePassword = props['storePassword']
+            android.signingConfigs[configName].keyAlias = props['keyAlias']
+            android.signingConfigs[configName].keyPassword = props['keyPassword']
+        }
+    }
 }
