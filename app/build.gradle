@@ -20,6 +20,8 @@ android {
             signingConfig signingConfigs.release
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            debuggable false
+            jniDebugBuild false
         }
     }
 }

@@ -3,6 +3,7 @@ package za.co.maiatoday.devart.ui;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -12,6 +13,8 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import za.co.maiatoday.devart.R;
+import za.co.maiatoday.devart.sensors.ShakeEventListener;
 import za.co.maiatoday.devart.util.ImageUtils;
 
 /**
@@ -63,6 +67,9 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
 
 	private boolean imageSet;
 
+    private SensorManager mSensorManager;
+    private ShakeEventListener mSensorListener;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +83,17 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
                 shareUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             }
         }
+
+        mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        mSensorListener = new ShakeEventListener();
+
+        mSensorListener.setOnShakeListener(new ShakeEventListener.OnShakeListener() {
+
+            public void onShake() {
+                shakeBox();
+                Toast.makeText(getActivity(), "Choosing cogs...", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -125,12 +143,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
 
 				@Override
 				public void onClick(View arg0) {
-					// debug so I don't have to get another pic but can try another algorithm
-					if (bitmap != null) {
-						BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
-						bbFragment.shake();
-					}
-					// get a new image
+                    // get a new image
 					openImageIntent();
 				}
 			});
@@ -150,6 +163,14 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
 
         mSelfieImage.setOnTouchListener(this);
         return view;
+    }
+
+    private void shakeBox() {
+        if (bitmap != null) {
+            BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+            bbFragment.shake();
+            bbFragment.turnHandle();
+        }
     }
 
     /**
@@ -192,6 +213,9 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         populateImageFromUri(processedImageUri);
         PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
         plusFragment.register(this);
+        mSensorManager.registerListener(mSensorListener,
+            mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+            SensorManager.SENSOR_DELAY_UI);
         showPlusButtons(plusFragment.isConnected());
         populateDefaultImage();
     }
@@ -201,6 +225,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         super.onPause();
         PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
         plusFragment.unRegister(this);
+        mSensorManager.unregisterListener(mSensorListener);
     }
 
     @Override
