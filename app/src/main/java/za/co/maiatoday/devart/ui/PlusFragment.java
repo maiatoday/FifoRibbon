@@ -360,9 +360,9 @@ public class PlusFragment extends Fragment implements
             PersonBuffer personBuffer = peopleData.getPersonBuffer();
             try {
                 peopleCount = personBuffer.getCount();
-                for (int i = 0; i < peopleCount; i++) {
-                    Log.d(TAG, "Display name: " + personBuffer.get(i).getDisplayName());
-                }
+//                for (int i = 0; i < peopleCount; i++) {
+//                    Log.d(TAG, "Display name: " + personBuffer.get(i).getDisplayName());
+//                }
             } finally {
                 personBuffer.close();
             }

@@ -30,13 +30,14 @@ dependencies {
     compile 'com.google.android.gms:play-services:+'
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 }
+
 allprojects {
     afterEvaluate { project ->
         def propsFile = rootProject.file('keystore.properties')
         def configName = 'release'
         if (propsFile.exists()) {
             println "Found keystore.properties file"
-            // Debug prinln
+//            // Debug println
 //            def props = new Properties()
 //            props.load(new FileInputStream(propsFile))
 //            props.each { key, val ->
