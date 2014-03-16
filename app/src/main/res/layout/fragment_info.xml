@@ -15,7 +15,6 @@
             android:text="You are the subject. Post a selfie. The code will interpret your image and hide your face. Find the images by searching for #autoselfie on Google+."
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_above="@+id/loginlinearLayout"
             android:textSize="18dp"
             android:gravity="center"/>
 

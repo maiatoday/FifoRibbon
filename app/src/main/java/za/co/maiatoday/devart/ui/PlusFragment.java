@@ -15,9 +15,13 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.plus.model.people.PersonBuffer;
 
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,7 +32,7 @@ import za.co.maiatoday.devart.R;
  * Created by maia on 2014/02/22.
  */
 public class PlusFragment extends Fragment implements
-    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<People.LoadPeopleResult> {
     private static String TAG = PlusFragment.class.toString();
 
     private static final int STATE_DEFAULT = 0;
@@ -70,6 +74,7 @@ public class PlusFragment extends Fragment implements
     // until the user clicks 'sign in'.
     private int mSignInError;
     private Person currentPerson;
+    private int peopleCount;
 
 
     public boolean isConnected() {
@@ -191,6 +196,9 @@ public class PlusFragment extends Fragment implements
 //            Person.Image personPhoto = currentPerson.getImage();
 //            String personGooglePlusProfile = currentPerson.getUrl();
         }
+
+        Plus.PeopleApi.loadVisible(mGoogleApiClient, null)
+            .setResultCallback(this);
         mSignInProgress = STATE_DEFAULT;
     }
 
@@ -346,6 +354,23 @@ public class PlusFragment extends Fragment implements
         }
     }
 
+    @Override
+    public void onResult(People.LoadPeopleResult peopleData) {
+        if (peopleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
+            PersonBuffer personBuffer = peopleData.getPersonBuffer();
+            try {
+                peopleCount = personBuffer.getCount();
+                for (int i = 0; i < peopleCount; i++) {
+                    Log.d(TAG, "Display name: " + personBuffer.get(i).getDisplayName());
+                }
+            } finally {
+                personBuffer.close();
+            }
+        } else {
+            Log.e(TAG, "Error requesting visible circles: " + peopleData.getStatus());
+        }
+    }
+
     public interface PlusStatusChangeListener {
         public void onPlusStatusChange(boolean isConnected, String status);
     }
@@ -400,6 +425,10 @@ public class PlusFragment extends Fragment implements
             }
         }
         return res;
+    }
+
+    public int getPeopleCount() {
+        return peopleCount;
     }
 
 }
