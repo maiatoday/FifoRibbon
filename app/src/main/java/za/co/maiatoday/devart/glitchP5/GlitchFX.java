@@ -1,8 +1,7 @@
 package za.co.maiatoday.devart.glitchP5;
 
 import android.graphics.Bitmap;
-
-import java.util.Random;
+import android.graphics.RectF;
 
 import za.co.maiatoday.devart.util.MathsUtils;
 
@@ -42,11 +41,11 @@ public class GlitchFX {
         System.arraycopy(pixels, 0, lastPixels, 0, pixels.length);
     }
 
-    public void glitch(int xPos, int yPos, int w, int h, int sX, int sY) {
-        computeArea(xPos, yPos, w, h, sX, sY);
-        Random r = new Random();
-        int shiftr = r.nextInt(16);
-        if (area.length < area_.length) {
+    public void glitch(RectF bounds, int offsetX, int offsetY, boolean doShift, int shiftr) {
+        computeArea((int)bounds.centerX(), (int)bounds.centerY(), (int) bounds.width(), (int) bounds.height(), offsetX, offsetY);
+
+//        if (area.length < area_.length) {
+        if(!doShift) {
             for (int j = 0; j < area.length; j++) {
                 pixels[area[j]] = lastPixels[area_[j]];
                 // bitmap.pixels[area[j]] += bitmap.pixels[area_[j]] << shiftr;

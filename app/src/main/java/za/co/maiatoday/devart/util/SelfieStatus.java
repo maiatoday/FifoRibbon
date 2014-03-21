@@ -77,7 +77,8 @@ public class SelfieStatus {
         //TODO pick cogs
 //        waysToChange = WaysToChange.rollDice(r);
         boxOfCogs.clear();
-        int cogLoop = r.nextInt(6);
+//        int cogLoop = r.nextInt(6);
+        int cogLoop = 0; //TODO testing only
         boxOfCogs.add(new DotCog(faces, facesFound, colors));
         for (int i = 0; i <= cogLoop; i++ ) {
             boxOfCogs.add(new GlitchCog(faces, facesFound, colors));
