@@ -25,9 +25,8 @@ public class SelfieStatus {
     boolean processDone = false;
 
     private static final int MAX_FACES = 5;
-    private FaceDetector detector;
-    private FaceDetector.Face[] faces;
-    int facesFound;
+    private FaceDetector mDetector;
+    private Vector<FaceDetector.Face> mFaces = new Vector<FaceDetector.Face>();
 
     int[] colors;
 	
@@ -69,7 +68,7 @@ public class SelfieStatus {
         this.orig = orig;
         this.bmpToPost = orig;
         processDone = false;
-        detectFaces();
+        mFaces = detectFaces(orig);
         detectColours();
     }
 
@@ -77,15 +76,14 @@ public class SelfieStatus {
         //TODO pick cogs
 //        waysToChange = WaysToChange.rollDice(r);
         boxOfCogs.clear();
-//        int cogLoop = r.nextInt(6);
-        int cogLoop = 0; //TODO testing only
-        boxOfCogs.add(new DotCog(faces, facesFound, colors));
+        int cogLoop = r.nextInt(2);
+        boxOfCogs.add(new DotCog(mFaces, colors));
         for (int i = 0; i <= cogLoop; i++ ) {
-            boxOfCogs.add(new GlitchCog(faces, facesFound, colors));
-            boxOfCogs.add(new EyeBlockCog(faces, facesFound, colors));
+            boxOfCogs.add(new GlitchCog(mFaces, colors));
+            boxOfCogs.add(new EyeBlockCog(mFaces,colors));
         }
-        boxOfCogs.add(new EyeBlockCog(faces, facesFound, colors));
-        boxOfCogs.add(new DotCog(faces, facesFound, colors));
+        boxOfCogs.add(new EyeBlockCog(mFaces, colors));
+        boxOfCogs.add(new DotCog(mFaces, colors));
 
     }
 
@@ -118,6 +116,10 @@ public class SelfieStatus {
            bmpToPost = cog.spin(bmpToPost, false);
            status += cog.getStatus();
         }
+        Vector<FaceDetector.Face> facesLeft = detectFaces(bmpToPost);
+        if (facesLeft.size() > 0) {
+            status += " alert " + facesLeft.size() + " face(s)";
+        }
         Log.i("SelfieStatus", status);
         processDone = true;
         return true;
@@ -133,13 +135,14 @@ public class SelfieStatus {
     }
 
 
-    private void detectFaces() {
+    private Vector<FaceDetector.Face> detectFaces(Bitmap orig) {
+        Vector<FaceDetector.Face> faces = new Vector<FaceDetector.Face>();
         if (null != orig) {
             int width = orig.getWidth();
             int height = orig.getHeight();
 
-            detector = new FaceDetector(width, height, MAX_FACES);
-            faces = new FaceDetector.Face[MAX_FACES];
+            mDetector = new FaceDetector(width, height, MAX_FACES);
+            FaceDetector.Face[] tempFaces = new FaceDetector.Face[MAX_FACES];
 
             Bitmap temp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
             Paint ditherPaint = new Paint();
@@ -149,10 +152,14 @@ public class SelfieStatus {
             canvas.setBitmap(temp);
             canvas.drawBitmap(orig, 0, 0, ditherPaint);
 
-            facesFound = detector.findFaces(temp, faces);
+            int facesFound = mDetector.findFaces(temp, tempFaces);
 
-            Log.i("FaceDetector", "Number of faces found: " + facesFound);
+            Log.i("FaceDetector", "Number of mFaces found: " + facesFound);
+            for (int i = 0; i < facesFound; i++) {
+                faces.add(tempFaces[i]);
+            }
         }
+        return faces;
     }
 
 }

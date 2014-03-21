@@ -15,8 +15,8 @@ public class GlitchCog extends BaseCog {
     Random r = new Random();
     Vector<GlitchBlock> blocks = new Vector<GlitchBlock>();
 
-    public GlitchCog(FaceDetector.Face[] face, int facesFound, int[] colors) {
-        super(face, facesFound, colors);
+    public GlitchCog(Vector<FaceDetector.Face> faces, int[] colors) {
+        super(faces, colors);
     }
 
     @Override
@@ -29,14 +29,14 @@ public class GlitchCog extends BaseCog {
         }
         GlitchFX tempglitchfx = new GlitchFX(in);
         blocks.clear();
-        int ruleOfThirds = in.getHeight()/3;
+        int ruleOfThirds = in.getHeight() / 3;
 
         int w = mOut.getWidth();
         int h = mOut.getHeight();
         int xJump = w / 8;
         int yJump = h / 8;
-        int dx = r.nextInt(xJump/2);
-        int dy = r.nextInt(yJump/2);
+        int dx = r.nextInt(xJump / 2);
+        int dy = r.nextInt(yJump / 2);
         int j = 2;
         for (int x = 0; x < w; x += 2 * xJump) {
             for (int y = 0; y < h; y += 2 * yJump) {
@@ -47,11 +47,11 @@ public class GlitchCog extends BaseCog {
                 blocks.add(gb);
                 j += 2;
                 dx = xJump - r.nextInt(xJump * 2);
-				dy = yJump - r.nextInt(yJump * 2);			
+                dy = yJump - r.nextInt(yJump * 2);
             }
         }
         for (GlitchBlock b : blocks) {
-           Log.d("GlitchBlock", b.toString());
+            Log.d("GlitchBlock", b.toString());
             glitchImage(b, tempglitchfx);
         }
         mOut = tempglitchfx.getBitmap();
@@ -61,17 +61,16 @@ public class GlitchCog extends BaseCog {
 
     /**
      * Checks if the rectangle described by bounds is near a detected face
+     *
      * @param bounds
      * @return
      */
     private boolean nearFace(RectF bounds) {
-        if (facesFound > 0) {
-            for (int index = 0; index < facesFound; ++index) {
-                //TODO what about confidence?
-                PointF midPoint = new PointF();
-                faces[index].getMidPoint(midPoint);
-                return bounds.contains(midPoint.x, midPoint.y);
-            }
+        for (FaceDetector.Face face : faces) {
+            //TODO what about confidence?
+            PointF midPoint = new PointF();
+            face.getMidPoint(midPoint);
+            return bounds.contains(midPoint.x, midPoint.y);
         }
         return false;
     }
@@ -92,15 +91,25 @@ public class GlitchCog extends BaseCog {
      */
     private class GlitchBlock {
         private int magic = 20;
-        /** The bounds of the area to glitch */
+        /**
+         * The bounds of the area to glitch
+         */
         RectF bounds;
-        /** The x offset of the glitch shift area */
+        /**
+         * The x offset of the glitch shift area
+         */
         int xOffset = magic;
-        /** The y offset of the glitch shift area */
+        /**
+         * The y offset of the glitch shift area
+         */
         int yOffset = magic;
-        /** Must it apply the shift register or not */
+        /**
+         * Must it apply the shift register or not
+         */
         boolean noShift;
-        /** number of bits to shift */
+        /**
+         * number of bits to shift
+         */
         int shiftReg;
 
         @Override

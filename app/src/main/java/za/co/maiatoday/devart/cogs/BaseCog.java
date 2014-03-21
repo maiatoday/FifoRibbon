@@ -4,21 +4,21 @@ import android.graphics.Bitmap;
 import android.media.FaceDetector;
 
 import java.util.Random;
+import java.util.Vector;
+
 /**
  * Created by maia on 2014/03/07.
  */
 public abstract class BaseCog {
-    protected FaceDetector.Face[] faces;
-	int facesFound;
+    protected Vector<FaceDetector.Face> faces;
     int[] colors;
 	Bitmap mIn, mOut;
 	
 	Random r = new Random(System.currentTimeMillis());
     private String mStatus;
 
-    public BaseCog(FaceDetector.Face[] face, int facesFound, int[] colors) {
-        this.faces = face;
-        this.facesFound = facesFound;
+    public BaseCog(Vector<FaceDetector.Face> faces, int[] colors) {
+        this.faces = faces;
         this.colors = colors;
 
     }

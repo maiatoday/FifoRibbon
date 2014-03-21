@@ -14,8 +14,8 @@ import java.util.Vector;
 public class DotCog extends BaseCog {
 
     Vector<float[]> colorHSV = new Vector<float[]>();
-    public DotCog(FaceDetector.Face[] face, int facesFound, int[] colors) {
-        super(face, facesFound, colors);
+    public DotCog(Vector<FaceDetector.Face> faces, int[] colors) {
+        super(faces,colors);
         for (int i = 0; i< colors.length; i++) {
             float[] hsv = new float[3];
             Color.colorToHSV(colors[i], hsv);
