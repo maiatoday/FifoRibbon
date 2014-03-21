@@ -41,12 +41,12 @@ public class GlitchFX {
         System.arraycopy(pixels, 0, lastPixels, 0, pixels.length);
     }
 
-    public void glitch(RectF bounds, int offsetX, int offsetY, boolean doShift, int shiftr) {
+    public void glitch(RectF bounds, int offsetX, int offsetY, boolean noShift, int shiftr) {
         computeArea((int)bounds.centerX(), (int)bounds.centerY(), (int) bounds.width(), (int) bounds.height(), offsetX, offsetY);
 
 //        if (area.length < area_.length) {
-        if(!doShift) {
-            for (int j = 0; j < area.length; j++) {
+        if(noShift) {
+            for (int j = 0; j < area.length && j < area_.length ; j++) {
                 pixels[area[j]] = lastPixels[area_[j]];
                 // bitmap.pixels[area[j]] += bitmap.pixels[area_[j]] << shiftr;
             }

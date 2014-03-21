@@ -12,7 +12,6 @@ import java.util.Vector;
 import za.co.maiatoday.devart.glitchP5.GlitchFX;
 
 public class GlitchCog extends BaseCog {
-    private int magic = 20;
     Random r = new Random();
     Vector<GlitchBlock> blocks = new Vector<GlitchBlock>();
 
@@ -92,12 +91,13 @@ public class GlitchCog extends BaseCog {
      * contains detail about the block in the image that will be glitched
      */
     private class GlitchBlock {
+        private int magic = 20;
         /** The bounds of the area to glitch */
         RectF bounds;
         /** The x offset of the glitch shift area */
-        int xOffset;
+        int xOffset = magic;
         /** The y offset of the glitch shift area */
-        int yOffset;
+        int yOffset = magic;
         /** Must it apply the shift register or not */
         boolean noShift;
         /** number of bits to shift */
