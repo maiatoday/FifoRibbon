@@ -59,6 +59,7 @@ public class GlitchFX {
     }
 
     void computeArea(int xPos, int yPos, int w, int h, int sX, int sY) {
+        //TODO easier to work with RectF?
         if (xPos != lastxPos || yPos != lastyPos || w != lastw || h != lasth || sX != lastsX || sY != lastsY) {
             int startX = MathsUtils.constrain(xPos - w / 2, 0, bitmap.getWidth() - 1);
             int startY = MathsUtils.constrain(yPos - h / 2, 0, bitmap.getHeight() - 1);

@@ -22,7 +22,7 @@ public class EyeBlockCog extends BaseCog {
         } else {
             this.mOut = mIn;
         }
-        int count = 4;
+        int rectangleCount = 4;
         Paint drawPaint = new Paint();
 
         drawPaint.setColor(Color.MAGENTA);
@@ -48,7 +48,7 @@ public class EyeBlockCog extends BaseCog {
                         ", Eye distance: " + eyeDistance +
                         ", Mid Point: (" + midPoint.x + ", " + midPoint.y + ")"
                 );
-                for (int of = 0; of < count; of += 1) {
+                for (int of = 0; of < rectangleCount; of += 1) {
                     if (of % 2 == 0) {
                         drawPaint.setColor(Color.MAGENTA);
                     } else if (of % 3 == 0) {

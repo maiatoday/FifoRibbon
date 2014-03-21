@@ -49,14 +49,16 @@ public class DotCog extends BaseCog {
                 float[] pHSV = new float[3];
                 Color.colorToHSV(p, pHSV);
                 for (float[] hsv : colorHSV ) {
-                   if ((pHSV[0] != hsv[0] && pHSV[1] != hsv[1] && pHSV[2] != hsv[2]))  {
-//                       float[] newhsv = new float[3];
-//                       newhsv[0] = hsv[0];
-//                       newhsv[1] = 255;
-//                       newhsv[2] = hsv[2];
-//                       drawPaint.setColor(Color.HSVToColor(newhsv));
-                       drawPaint.setColor(p);
-                       canvas.drawCircle(x, y, radius, drawPaint);
+                   if ((pHSV[0] == hsv[0] || pHSV[1] == hsv[1] || pHSV[2] == hsv[2]))  {
+                       float[] newhsv = new float[3];
+                       newhsv[0] = hsv[0];
+                       newhsv[1] = hsv[1]+2;
+                       newhsv[2] = hsv[2]+2;
+                       drawPaint.setColor(Color.HSVToColor(newhsv));
+                       canvas.drawCircle(x+2, y+2, radius, drawPaint);
+
+                       drawPaint.setColor(Color.argb(80, Color.red(p), Color.green(p), Color.blue(p)));
+                       canvas.drawCircle(x, y, radius+2, drawPaint);
                    }
                 }
 
