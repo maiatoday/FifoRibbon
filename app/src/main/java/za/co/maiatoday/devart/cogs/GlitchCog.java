@@ -47,7 +47,8 @@ public class GlitchCog extends BaseCog {
                 gb.noShift = nearFace(gb.bounds);
                 blocks.add(gb);
                 j += 2;
-                dx = r.nextInt(xJump * 2) - xJump;
+                dx = xJump - r.nextInt(xJump * 2);
+				dy = yJump - r.nextInt(yJump * 2);			
             }
         }
         for (GlitchBlock b : blocks) {
