@@ -65,7 +65,7 @@ public class GlitchCog extends BaseCog {
      * @param bounds
      * @return
      */
-    private boolean nearFace(RectF bounds) {
+    protected boolean nearFace(RectF bounds) {
         for (FaceDetector.Face face : faces) {
             //TODO what about confidence?
             PointF midPoint = new PointF();
@@ -76,7 +76,7 @@ public class GlitchCog extends BaseCog {
     }
 
 
-    private void glitchImage(GlitchBlock block, GlitchFX gg) {
+    protected void glitchImage(GlitchBlock block, GlitchFX gg) {
         if (gg == null) return;
         if (block == null || block.bounds == null) return;
         gg.open();
@@ -89,7 +89,7 @@ public class GlitchCog extends BaseCog {
     /**
      * contains detail about the block in the image that will be glitched
      */
-    private class GlitchBlock {
+    protected class GlitchBlock {
         private int magic = 20;
         /**
          * The bounds of the area to glitch

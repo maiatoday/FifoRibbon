@@ -13,6 +13,7 @@ import za.co.maiatoday.devart.cogs.BaseCog;
 import za.co.maiatoday.devart.cogs.DotCog;
 import za.co.maiatoday.devart.cogs.EyeBlockCog;
 import za.co.maiatoday.devart.cogs.GlitchCog;
+import za.co.maiatoday.devart.cogs.ShiftCog;
 import za.co.maiatoday.devart.color.MedianCutQuantizer;
 
 /**
@@ -20,7 +21,7 @@ import za.co.maiatoday.devart.color.MedianCutQuantizer;
  */
 public class SelfieStatus {
     Bitmap bmpToPost;
-    String status;
+    String mStatus;
     Bitmap orig;
     boolean processDone = false;
 
@@ -28,7 +29,7 @@ public class SelfieStatus {
     private FaceDetector mDetector;
     private Vector<FaceDetector.Face> mFaces = new Vector<FaceDetector.Face>();
 
-    int[] colors;
+    int[] mColors;
 	
     Vector<BaseCog> boxOfCogs = new Vector<BaseCog>();
 
@@ -77,13 +78,13 @@ public class SelfieStatus {
 //        waysToChange = WaysToChange.rollDice(r);
         boxOfCogs.clear();
         int cogLoop = r.nextInt(2);
-        boxOfCogs.add(new DotCog(mFaces, colors));
+        boxOfCogs.add(new DotCog(mFaces, mColors));
         for (int i = 0; i <= cogLoop; i++ ) {
-            boxOfCogs.add(new GlitchCog(mFaces, colors));
-            boxOfCogs.add(new EyeBlockCog(mFaces,colors));
+            boxOfCogs.add(new GlitchCog(mFaces, mColors));
+            boxOfCogs.add(new EyeBlockCog(mFaces, mColors));
         }
-        boxOfCogs.add(new EyeBlockCog(mFaces, colors));
-        boxOfCogs.add(new DotCog(mFaces, colors));
+        boxOfCogs.add(new EyeBlockCog(mFaces, mColors));
+        boxOfCogs.add(new DotCog(mFaces, mColors));
 
     }
 
@@ -92,11 +93,11 @@ public class SelfieStatus {
     }
 
     public String getStatus() {
-        return status;
+        return mStatus;
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.mStatus = status;
     }
 
     public boolean isProcessDone() {
@@ -110,28 +111,32 @@ public class SelfieStatus {
         if (processDone) {
             return true;
         }
-        status = "#autoselfie ";
+        StringBuilder status = new StringBuilder(140);
+        status.append("#autoselfie ");
         bmpToPost = BaseCog.copy(orig);
         for (BaseCog cog : boxOfCogs) {
            bmpToPost = cog.spin(bmpToPost, false);
-           status += cog.getStatus();
+           status.append(cog.getStatus());
         }
         Vector<FaceDetector.Face> facesLeft = detectFaces(bmpToPost);
         if (facesLeft.size() > 0) {
-            status += " alert " + facesLeft.size() + " face(s)";
+            ShiftCog sc = new ShiftCog(mFaces, mColors);
+            bmpToPost = sc.spin(bmpToPost, false);
+            status.append(sc.getStatus());
         }
-        Log.i("SelfieStatus", status);
+        Log.i("SelfieStatus", status.toString());
+        mStatus = status.toString();
         processDone = true;
         return true;
     }
 
     private void detectColours() {
         MedianCutQuantizer mcq = new MedianCutQuantizer(orig, 10);
-        colors = mcq.getQuantizedColorsInt();
+        mColors = mcq.getQuantizedColorsInt();
     }
 
-    public int[] getColors() {
-        return colors;
+    public int[] getmColors() {
+        return mColors;
     }
 
 
