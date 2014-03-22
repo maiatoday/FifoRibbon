@@ -79,44 +79,35 @@ public class MainActivity extends ActionBarActivity implements MainNavigation  {
 
     @Override
     protected void onResume() {
-//        Log.d(TAG, "onResume");
         super.onResume();
 //        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-
-//        Log.d(TAG, "onNewIntent");
         super.onNewIntent(intent);
 
     }
 
     @Override
     protected void onStart() {
-
-//        Log.d(TAG, "onStart");
         super.onStart();
+//        EasyTracker.getInstance(this).activityStart(this);
     }
 
     @Override
     protected void onPause() {
-
-//        Log.d(TAG, "onPause");
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-
-//        Log.d(TAG, "onStop");
         super.onStop();
+//        EasyTracker.getInstance(this).activityStop(this);
     }
 
     @Override
     protected void onDestroy() {
-
-//        Log.d(TAG, "onDestroy");
         super.onDestroy();
     }
 
