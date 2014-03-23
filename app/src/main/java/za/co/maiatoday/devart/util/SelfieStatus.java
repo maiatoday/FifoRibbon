@@ -57,9 +57,9 @@ public class SelfieStatus {
     void SelfieStatus() {
     }
 
-    public void setProcessDone(boolean processDone) {
-        this.processDone = processDone;
-    }
+//    public void setProcessDone(boolean processDone) {
+//        this.processDone = processDone;
+//    }
 
     public Bitmap getOrig() {
         return orig;
@@ -68,7 +68,7 @@ public class SelfieStatus {
     public void setOrig(Bitmap orig) {
         this.orig = orig;
         this.bmpToPost = orig;
-        processDone = false;
+//        processDone = false;
         mFaces = detectFaces(orig);
         detectColours();
     }
@@ -100,17 +100,17 @@ public class SelfieStatus {
         this.mStatus = status;
     }
 
-    public boolean isProcessDone() {
-        return processDone;
-    }
+//    public boolean isProcessDone() {
+//        return processDone;
+//    }
 
     public boolean processSelfie() {
         if (orig == null) {
             return false;
         }
-        if (processDone) {
-            return true;
-        }
+//        if (processDone) {
+//            return true;
+//        }
         StringBuilder status = new StringBuilder(140);
         status.append("#autoselfie ");
         bmpToPost = BaseCog.copy(orig);
@@ -126,7 +126,7 @@ public class SelfieStatus {
         }
         Log.i("SelfieStatus", status.toString());
         mStatus = status.toString();
-        processDone = true;
+//        processDone = true;
         return true;
     }
 

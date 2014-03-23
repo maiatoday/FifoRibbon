@@ -8,11 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.Uri;
@@ -26,12 +23,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.SignInButton;
@@ -48,7 +45,7 @@ import za.co.maiatoday.devart.util.ImageUtils;
 /**
  * Created by maia on 2013/09/01.
  */
-public class MainFragment extends Fragment implements View.OnTouchListener, PlusFragment.PlusStatusChangeListener {   // Update status button
+public class MainFragment extends Fragment implements  PlusFragment.PlusStatusChangeListener {   // Update status button
 
     private static final int REQUEST_IMAGE = 2;
     Button mShareButton;
@@ -65,10 +62,12 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
     private MainNavigation mainActivity;
     private SignInButton mSignInButton;
 
-	private boolean imageSet;
+    private boolean imageSet;
 
     private SensorManager mSensorManager;
     private ShakeEventListener mSensorListener;
+    private ProgressBar mProgress;
+    private BlackBoxFragment.BlackBoxStatusChangeListener bbListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,44 +108,37 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         mSignInButton = (SignInButton) view.findViewById(R.id.sign_in_button);
         mShareButton = (Button) view.findViewById(R.id.share_button);
         mUpdateText = (EditText) view.findViewById(R.id.txtUpdateStatus);
+        mProgress = (ProgressBar) view.findViewById(R.id.progressBar);
         PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
 
         showPlusButtons(plusFragment.isConnected());
 
-        BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
-        bbFragment.setImageView(mSelfieImage);
-        bbFragment.setTextView(mUpdateText);
-
         mShareButton.setOnClickListener(new View.OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-					PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
-					if (plusFragment.isConnected()) {
-						processImageToShare(true);
-					} else {
-						mainActivity.switchToInfoFragment();
-					}
-				}
-			});
+            @Override
+            public void onClick(View v) {
+                BlackBoxFragment blackBoxFragment = BlackBoxFragment.getInstance(getActivity());
+                blackBoxFragment.turnHandle();
+            }
+        });
 
         mSignInButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
-					plusFragment.signIn();
-					mainActivity.switchToInfoFragment();
-				}
-			});
+            @Override
+            public void onClick(View v) {
+                PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
+                plusFragment.signIn();
+                mainActivity.switchToInfoFragment();
+            }
+        });
 
         mSnapButton.setOnClickListener(new View.OnClickListener() {
 
-				@Override
-				public void onClick(View arg0) {
-                    // get a new image
-					openImageIntent();
-				}
-			});
+            @Override
+            public void onClick(View arg0) {
+                // get a new image
+                openImageIntent();
+            }
+        });
 
         if (savedInstanceState != null) {
             processedImageUri = savedInstanceState.getParcelable("lastUri");
@@ -154,15 +146,48 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         }
 
         mSelfieImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
-					bbFragment.turnHandle();
-				}
-			});
+            @Override
+            public void onClick(View v) {
+                BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+                bbFragment.turnHandle();
+            }
+        });
 
-        mSelfieImage.setOnTouchListener(this);
+        bbListener = new BlackBoxFragment.BlackBoxStatusChangeListener() {
+            @Override
+            public void onBBStatusChange(Bitmap bmp, String status) {
+                mSelfieImage.setImageBitmap(bmp);
+                mUpdateText.setText(status);
+                dingImageReady();
+            }
+
+            @Override
+            public void onShowProgress(boolean show) {
+                mProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        };
         return view;
+    }
+
+    private void dingImageReady() {
+        PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
+        if (plusFragment.isConnected()) {
+            processImageToShare(true);
+        } else {
+            mainActivity.switchToInfoFragment();
+        }
+    }
+
+    private void registerBlackBoxListener() {
+        BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+        bbFragment.register(bbListener);
+    }
+
+    private void unRegisterBlackBoxListener() {
+
+        BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
+        bbFragment.unRegister(bbListener);
+
     }
 
     private void shakeBox() {
@@ -183,8 +208,8 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
     }
 
     private void showPlusButtons(boolean isConnected) {
-        mSignInButton.setVisibility(isConnected ?View.GONE: View.VISIBLE);
-        mShareButton.setVisibility(isConnected ?View.VISIBLE: View.GONE);
+        mSignInButton.setVisibility(isConnected ? View.GONE : View.VISIBLE);
+        mShareButton.setVisibility(isConnected ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -203,7 +228,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
             mainActivity = (MainNavigation) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-										 + " must implement MainNavigation");
+                + " must implement MainNavigation");
         }
     }
 
@@ -218,6 +243,8 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
             SensorManager.SENSOR_DELAY_UI);
         showPlusButtons(plusFragment.isConnected());
         populateDefaultImage();
+        mProgress.setVisibility(View.GONE);
+        registerBlackBoxListener();
     }
 
     @Override
@@ -226,6 +253,7 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         PlusFragment plusFragment = PlusFragment.getInstance(getActivity());
         plusFragment.unRegister(this);
         mSensorManager.unregisterListener(mSensorListener);
+        unRegisterBlackBoxListener();
     }
 
     @Override
@@ -233,10 +261,10 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
-				case REQUEST_IMAGE:
-					processImage(data);
-					updateViews();
-					break;
+            case REQUEST_IMAGE:
+                processImage(data);
+                updateViews();
+                break;
             }
         }
     }
@@ -250,11 +278,11 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-			case R.id.action_share:
-				processImageToShare(false);
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
+        case R.id.action_share:
+            processImageToShare(false);
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -330,15 +358,15 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
 
     private void populateImageFromUri(Uri selectedImageUri) {
         if (selectedImageUri == null) {
-			imageSet = false;
+            imageSet = false;
             return;
         }
-		imageSet = true;
+        imageSet = true;
         try {
             bitmap = ImageUtils.getSizedBitmap(getActivity(), selectedImageUri, mSelfieImage.getHeight());
         } catch (Exception e) {
             Toast.makeText(getActivity(),
-						   "Problem loading file", Toast.LENGTH_LONG).show();
+                "Problem loading file", Toast.LENGTH_LONG).show();
             Log.d("autoselfie", "can't load image", e);
         }
 
@@ -351,56 +379,6 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
             Matrix matrix = mSelfieImage.getImageMatrix();
             matrix.invert(inverseMatrix);
         }
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (bitmap != null) {
-            switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-					path = new Path();
-					path.moveTo(event.getX(), event.getY());
-//                Log.d("DOWN", "DOWN");
-					break;
-
-				case MotionEvent.ACTION_MOVE:
-//                Log.d("MOVE", "MOVE");
-					path.lineTo(event.getX(), event.getY());
-					break;
-
-				case MotionEvent.ACTION_UP:
-//                Log.d("UP", "UP");
-					path.lineTo(event.getX(), event.getY());
-					RectF bounds = new RectF();
-					path.computeBounds(bounds, false);
-//                mSelfie.glitchImage(convertFromViewToImage(bounds), 0);
-//                bitmap = drawPath(mSelfie.getBmpToPost(), path, pathColor); //The path is in the wrong place
-//                mSelfieImage.setImageBitmap(mSelfie.getBmpToPost());
-					break;
-            }
-        }
-        return false;
-    }
-
-    private RectF convertFromViewToImage(RectF bounds) {
-        RectF transBounds = new RectF();
-        inverseMatrix.mapRect(transBounds, bounds);
-        return transBounds;
-    }
-
-    private Bitmap drawPath(Bitmap in, Path path, int pathColor) {
-        Bitmap out = in.copy(in.getConfig(), true);
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setStrokeWidth(10);
-        paint.setColor(pathColor);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        Canvas canvas = new Canvas();
-        canvas.setBitmap(out);
-        canvas.drawPath(path, paint);
-        return out;
-
     }
 
     private Uri processedImageUri;
@@ -428,17 +406,16 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
                 shareIntent.putExtra(Intent.EXTRA_STREAM, processedImageUri);
             }
             startActivityForResult(shareIntent, 0);
-            final Bitmap orig = bbFragment.getOriginalBitmap();
-            if (debugHide) {
-                Runnable r = new Runnable() {
-                    public void run() {
-                        mSelfieImage.setImageBitmap(orig);
-                    }
-                };
-                mSelfieImage.postDelayed(r, 2000);
-            }
+//            final Bitmap orig = bbFragment.getOriginalBitmap();
+//            if (debugHide) {
+//                Runnable r = new Runnable() {
+//                    public void run() {
+//                        mSelfieImage.setImageBitmap(orig);
+//                    }
+//                };
+//                mSelfieImage.postDelayed(r, 2000);
+//            }
         }
-
     }
 
     @Override
@@ -457,6 +434,6 @@ public class MainFragment extends Fragment implements View.OnTouchListener, Plus
             } else {
                 mSelfieImage.setImageResource(R.drawable.autoselfie_help);
             }
-		}
+        }
     }
 }

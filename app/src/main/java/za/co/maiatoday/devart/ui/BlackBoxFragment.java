@@ -8,29 +8,26 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import za.co.maiatoday.devart.R;
 import za.co.maiatoday.devart.util.SelfieStatus;
 
 /**
  * Headless Fragment to do ImageMutating so that it will look after the AsyncTask if the Activity is recreated
  * Created by maia on 2014/03/14.
- *
  */
 public class BlackBoxFragment extends Fragment {
     private static String TAG = BlackBoxFragment.class.toString();
     SelfieStatus mSelfie = new SelfieStatus();
 
-    ImageView mImageView;
-    TextView mTextView;
     private BlackBoxTask mBlockBoxTask;
     private LoadBitmapTask mLoadUrlTask;
+    private boolean mIsDone;
 
     public BlackBoxFragment() {
     }
@@ -75,7 +72,6 @@ public class BlackBoxFragment extends Fragment {
      * Shake the box to choose different cogs
      */
     public void shake() {
-        mSelfie.setProcessDone(false);
         mSelfie.pickCogs();
     }
 
@@ -85,22 +81,6 @@ public class BlackBoxFragment extends Fragment {
     public void turnHandle() {
         mBlockBoxTask = new BlackBoxTask();
         mBlockBoxTask.execute();
-    }
-
-    /**
-     * Set the imageView which the box must update to see the changes
-     * @param imageView
-     */
-    public void setImageView(ImageView imageView) {
-        this.mImageView = imageView;
-    }
-
-    /**
-     * Set the textView which the box must update to see the generated status
-     * @param textView
-     */
-    public void setTextView(TextView textView) {
-        this.mTextView = textView;
     }
 
     public String getStatus() {
@@ -120,10 +100,17 @@ public class BlackBoxFragment extends Fragment {
     }
 
     public boolean isDone() {
-        return mSelfie.isProcessDone();
+//        return mSelfie.isProcessDone();
+        return mIsDone;
     }
 
     private class BlackBoxTask extends AsyncTask<Void, Void, Bitmap> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgress(true);
+            mIsDone = false;
+        }
 
         @Override
         protected Bitmap doInBackground(Void... params) {
@@ -134,12 +121,9 @@ public class BlackBoxFragment extends Fragment {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
-            if (mImageView != null) {
-                mImageView.setImageBitmap(bitmap);
-            }
-            if (mTextView != null) {
-                mTextView.setText(mSelfie.getStatus());
-            }
+            showProgress(false);
+            mIsDone = true;
+            statusChange(bitmap, mSelfie.getStatus());
         }
     }
 
@@ -154,7 +138,7 @@ public class BlackBoxFragment extends Fragment {
                 bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-            }  catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return bmp;
@@ -163,7 +147,7 @@ public class BlackBoxFragment extends Fragment {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
-            mImageView.setImageBitmap(bitmap);
+            statusChange(bitmap, mSelfie.getStatus());
             setBitmap(bitmap);
 //            shake();
 //            turnHandle();
@@ -175,14 +159,42 @@ public class BlackBoxFragment extends Fragment {
         String imageUrl = p.getImageUrl();
         String s2 = p.getInfoString();
         String s3 = p.getAnotherString();
-        if (mImageView != null) {
-            if (!TextUtils.isEmpty(imageUrl)) {
-                mLoadUrlTask = new LoadBitmapTask();
-                mLoadUrlTask.execute(new String[]{imageUrl});
-            } else {
-                mImageView.setImageResource(R.drawable.autoselfie_help);
-            }
+        if (!TextUtils.isEmpty(imageUrl)) {
+            mLoadUrlTask = new LoadBitmapTask();
+            mLoadUrlTask.execute(new String[]{imageUrl});
         }
+    }
+
+    public interface BlackBoxStatusChangeListener {
+        public void onBBStatusChange(Bitmap bmp, String status);
+
+        public void onShowProgress(boolean show);
+    }
+
+    CopyOnWriteArrayList<BlackBoxStatusChangeListener> listeners = new CopyOnWriteArrayList<BlackBoxStatusChangeListener>();
+
+    void register(BlackBoxStatusChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    void unRegister(BlackBoxStatusChangeListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void statusChange(Bitmap bitmap, String status) {
+        Iterator<BlackBoxStatusChangeListener> it = listeners.iterator();
+        while (it.hasNext()) {
+            it.next().onBBStatusChange(bitmap, status);
+        }
+
+    }
+
+    private void showProgress(boolean show) {
+        Iterator<BlackBoxStatusChangeListener> it = listeners.iterator();
+        while (it.hasNext()) {
+            it.next().onShowProgress(show);
+        }
+
     }
 
 }
