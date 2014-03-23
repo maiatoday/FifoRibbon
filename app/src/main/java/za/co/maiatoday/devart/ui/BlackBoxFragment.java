@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,7 +28,7 @@ public class BlackBoxFragment extends Fragment {
 
     private BlackBoxTask mBlockBoxTask;
     private LoadBitmapTask mLoadUrlTask;
-    private boolean mIsDone;
+    private boolean busy;
 
     public BlackBoxFragment() {
     }
@@ -79,8 +80,11 @@ public class BlackBoxFragment extends Fragment {
      * Turn the handle to make the cogs change the image
      */
     public void turnHandle() {
-        mBlockBoxTask = new BlackBoxTask();
-        mBlockBoxTask.execute();
+        if (!busy) {
+            Log.d(TAG, "turn handle");
+            mBlockBoxTask = new BlackBoxTask();
+            mBlockBoxTask.execute();
+        }
     }
 
     public String getStatus() {
@@ -99,17 +103,12 @@ public class BlackBoxFragment extends Fragment {
         mSelfie.setOrig(bitmap);
     }
 
-    public boolean isDone() {
-//        return mSelfie.isProcessDone();
-        return mIsDone;
-    }
-
     private class BlackBoxTask extends AsyncTask<Void, Void, Bitmap> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             showProgress(true);
-            mIsDone = false;
+            busy = true;
         }
 
         @Override
@@ -121,8 +120,9 @@ public class BlackBoxFragment extends Fragment {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
+            busy = false;
             showProgress(false);
-            mIsDone = true;
+            Log.d(TAG, "ding");
             statusChange(bitmap, mSelfie.getStatus());
         }
     }

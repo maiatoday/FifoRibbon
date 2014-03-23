@@ -385,8 +385,8 @@ public class MainFragment extends Fragment implements  PlusFragment.PlusStatusCh
 
     private void processImageToShare(boolean plus) {
         BlackBoxFragment bbFragment = BlackBoxFragment.getInstance(getActivity());
-        if (bbFragment.isDone()) {
             // Launch the Google+ share dialog with attribution to your app.
+        if (bbFragment.getBitmap() != null) {
             processedImageUri = ImageUtils.saveBitmapToFile(bbFragment.getBitmap(), getActivity());
             ContentResolver cr = getActivity().getContentResolver();
             String mime = cr.getType(processedImageUri);
