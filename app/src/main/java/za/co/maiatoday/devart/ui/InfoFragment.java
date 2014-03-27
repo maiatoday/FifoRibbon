@@ -59,7 +59,7 @@ public class InfoFragment extends Fragment implements View.OnClickListener, Plus
         btnMoreInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.maiatoday.co.za")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://devart.withgoogle.com/#/project/16858063")));
             }
         });
 

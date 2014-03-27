@@ -112,7 +112,7 @@ public class SelfieStatus {
 //            return true;
 //        }
         StringBuilder status = new StringBuilder(140);
-        status.append("#autoselfie ");
+        status.append("#autoselfie #devart ");
         bmpToPost = BaseCog.copy(orig);
         for (BaseCog cog : boxOfCogs) {
            bmpToPost = cog.spin(bmpToPost, false);
