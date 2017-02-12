@@ -1,38 +1,27 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.0.3'
+    compileSdkVersion sdkVer
+    buildToolsVersion buildToolsVer
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 19
-        versionCode 3
-        versionName "1.0.3"
-    }
-    signingConfigs {
-        release {
-            storeFile file("maiatodayandroid.keystore")
-        }
+        minSdkVersion 16
+        targetSdkVersion sdkVer
+        versionCode 4
+        versionName "1.0.4"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.release
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            debuggable false
-            jniDebugBuild false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
-    // compile 'com.android.support:support-v4:19.1.0'
-    compile 'com.android.support:appcompat-v7:19.0.0'
-    // compile 'com.android.support:support-v4:19.1.0'
-    compile 'com.android.support:appcompat-v7:19.0.0'
-    compile 'com.google.android.gms:play-services:+'
-    //compile 'com.google.apis:google-api-services-analytics:v3-rev83-1.17.0-rc'
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    compile "com.google.android.gms:play-services-plus:$rootProject.playServicesVersion"
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 }
 

@@ -20,7 +20,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.PlusClient;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
 
@@ -33,7 +32,7 @@ import za.co.maiatoday.devart.R;
  * Created by maia on 2014/02/22.
  */
 public class PlusFragment extends Fragment implements
-    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<People.LoadPeopleResult>, PlusClient.OnAccessRevokedListener {
+    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<People.LoadPeopleResult> {
     private static String TAG = PlusFragment.class.toString();
 
     private static final int STATE_DEFAULT = 0;
@@ -79,7 +78,8 @@ public class PlusFragment extends Fragment implements
 
 
     public boolean isConnected() {
-        return mGoogleApiClient.isConnected();
+        return false;
+//        return mGoogleApiClient.isConnected();
     }
 
     CopyOnWriteArrayList<PlusStatusChangeListener> listeners = new CopyOnWriteArrayList<PlusStatusChangeListener>();
@@ -121,7 +121,7 @@ public class PlusFragment extends Fragment implements
 
         // Keep Fragment around
         setRetainInstance(true);
-        mGoogleApiClient = buildGoogleApiClient();
+       // mGoogleApiClient = buildGoogleApiClient();
     }
 
     private GoogleApiClient buildGoogleApiClient() {
@@ -139,7 +139,7 @@ public class PlusFragment extends Fragment implements
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+//        mGoogleApiClient.connect();
     }
 
     @Override
@@ -306,8 +306,8 @@ public class PlusFragment extends Fragment implements
             // to delete user data so that we comply with Google developer
             // policies.
             Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
-            mGoogleApiClient = buildGoogleApiClient();
-            mGoogleApiClient.connect();
+//            mGoogleApiClient = buildGoogleApiClient();
+//            mGoogleApiClient.connect();
         }
     }
 
@@ -374,13 +374,13 @@ public class PlusFragment extends Fragment implements
         }
     }
 
-    @Override
-    public void onAccessRevoked(ConnectionResult connectionResult) {
-
-        currentPerson = null;
-        peopleCount = 0;
-
-    }
+//    @Override
+//    public void onAccessRevoked(ConnectionResult connectionResult) {
+//
+//        currentPerson = null;
+//        peopleCount = 0;
+//
+//    }
 
     public interface PlusStatusChangeListener {
         public void onPlusStatusChange(boolean isConnected, String status);

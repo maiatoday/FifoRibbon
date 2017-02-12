@@ -30,3 +30,5 @@ keystore.properties
 *.swp
 
 .DS_Store
+
+build/
